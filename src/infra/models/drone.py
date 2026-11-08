@@ -6,8 +6,8 @@ from datetime import datetime
 from sqlalchemy import CheckConstraint, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from scr.enums import DronePurpose, DroneStatus, FlightRank
-from scr.infra.db import Base
+from src.db import Base
+from src.enums import DronePurpose, DroneStatus, FlightRank
 
 
 class Drone(Base):
@@ -24,7 +24,7 @@ class Drone(Base):
     max_range_m: Mapped[int] = mapped_column(nullable=False)
     has_camera: Mapped[bool] = mapped_column(nullable=False, default=False)
     price: Mapped[int] = mapped_column(nullable=False)
-    status: Mapped[DroneStatus] = mapped_column(nullable=False, server_default=DroneStatus.in_stock)
+    status: Mapped[DroneStatus] = mapped_column(nullable=False, server_default=DroneStatus.IN_STOCK)
     customer_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("Customers.id"))
     sold_at: Mapped[datetime | None]
     sold_price: Mapped[int | None]

@@ -6,7 +6,7 @@ from datetime import date, datetime
 from sqlalchemy import String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from scr.infra.db import Base
+from src.db import Base
 
 
 class Customer(Base):

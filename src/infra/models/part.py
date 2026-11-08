@@ -5,8 +5,8 @@ import uuid
 from sqlalchemy import CheckConstraint, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from scr.enums import DronePurpose
-from scr.infra.db import Base
+from src.db import Base
+from src.enums import DronePurpose
 
 
 class Part(Base):
