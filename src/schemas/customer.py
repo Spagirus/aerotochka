@@ -1,3 +1,5 @@
+"""схемы для покупателя"""
+
 from datetime import date, datetime
 from uuid import UUID
 
@@ -15,8 +17,9 @@ class CreateCustomer(BaseInput):
 
     @field_validator("birth_date")
     def valid_date(self, b_date: date):
+        """проверка на актуальное время"""
         if b_date > date.today():
-            raise ValueError("введёная дата находится в будущем")
+            raise ValueError("введённая дата находится в будущем")
         return b_date
 
 
@@ -38,8 +41,9 @@ class UpdateCustomer(BaseInput):
 
     @field_validator("birth_date")
     def valid_date(self, b_date: date):
+        """проверка на актуальное время"""
         if b_date > date.today():
-            raise ValueError("введёная дата находится в будущем")
+            raise ValueError("введённая дата находится в будущем")
         return b_date
 
 

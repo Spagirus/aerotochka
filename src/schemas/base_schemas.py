@@ -1,3 +1,5 @@
+"""Родительские схемы из pydantic"""
+
 from pydantic import BaseModel, ConfigDict
 
 
