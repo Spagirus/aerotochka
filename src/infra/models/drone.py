@@ -6,8 +6,8 @@ from datetime import datetime
 from sqlalchemy import CheckConstraint, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from src.db import Base
 from src.enums import DronePurpose, DroneStatus, FlightRank
+from src.infra.db import Base
 
 
 class Drone(Base):

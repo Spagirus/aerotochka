@@ -6,8 +6,8 @@ from datetime import datetime
 from sqlalchemy import ForeignKey, String, Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from src.db import Base
 from src.enums import FlightRank, LicenseStatus
+from src.infra.db import Base
 from src.infra.models.utils import get_key, get_valid_until
 
 
