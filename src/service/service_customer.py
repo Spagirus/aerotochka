@@ -17,6 +17,15 @@ class ServiceCustomer:
     def __init__(self, session: AsyncSession):
         self.session = session
 
+    async def get_customer(self, customer_id: UUID) -> Customer:
+        """поиск покупателя по айди"""
+        stmt = select(Customer).where(Customer.id == customer_id)
+        customer = await self.session.scalar(stmt)
+        if not isinstance(customer, Customer):
+            raise NotFound404Error(code="CUSTOMER_NOT_FOUND",
+                                   message=f"покупатель с id ({customer_id} не найден")
+        return customer
+
     async def add_customer(self, data: CreateCustomer) -> Customer:
         """добавление покупателя, возвращает объект"""
         customer = Customer(**data.model_dump())

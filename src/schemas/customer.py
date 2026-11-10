@@ -16,7 +16,8 @@ class CreateCustomer(BaseInput):
     birth_date: date
 
     @field_validator("birth_date")
-    def valid_date(self, b_date: date):
+    @classmethod
+    def valid_date(cls, b_date: date):
         """проверка на актуальное время"""
         if b_date > date.today():
             raise ValueError("введённая дата находится в будущем")
@@ -40,7 +41,8 @@ class UpdateCustomer(BaseInput):
     birth_date: date | None
 
     @field_validator("birth_date")
-    def valid_date(self, b_date: date):
+    @classmethod
+    def valid_date(cls, b_date: date):
         """проверка на актуальное время"""
         if b_date > date.today():
             raise ValueError("введённая дата находится в будущем")
