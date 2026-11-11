@@ -10,7 +10,7 @@ from src.infra.db import Base
 
 
 class Customer(Base):
-    __tablename__ = "customers"
+    __tablename__ = "Customers"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     full_name: Mapped[str] = mapped_column(nullable=False)

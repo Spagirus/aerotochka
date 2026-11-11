@@ -1,21 +1,24 @@
-from typing import Annotated
 
-from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from uuid import UUID
 
-from src.infra.db import get_session
-from src.schemas.customer import ReadCustomer
-from src.service.service_customer import ServiceCustomer
+from fastapi import APIRouter
+from fastapi.exceptions import HTTPException
+
+from src.dependens import customer_dep
+from src.exceptions import NotFound404Error, Conflict409Error
+from src.schemas.customer import ReadCustomer, CreateCustomer
 
 router = APIRouter(
     tags=["Customers"],
-    prefix="/api/v1/customer"
+    prefix="/api/v1/customers"
 )
 
 
+@router.get("/{id}")
+async def get_customer(customer_id: UUID, service: customer_dep) -> ReadCustomer:
+    return await service.get_customer(customer_id=customer_id)
 
-@router.get("/{id}/")
-async def get_customer(id:str, session: SessionDep, service: ServiceCustomer) -> ReadCustomer:
-    result = await service(session=session).get_customer(customer_id=id)
-    return result
 
+@router.post("/", status_code=201)
+async def add_customer(data: CreateCustomer, service: customer_dep) -> ReadCustomer:
+    return await service.add_customer(data)

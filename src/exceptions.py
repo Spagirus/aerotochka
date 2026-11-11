@@ -1,9 +1,6 @@
 """Кастомные ошибки 404 и 409"""
 
-from fastapi import HTTPException
-
-
-class MainError(HTTPException):
+class MainError(Exception):
     def __init__(self, code, message):
         self.code = code
         self.message = message

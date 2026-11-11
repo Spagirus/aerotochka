@@ -1,9 +1,16 @@
-from src.service.service_customer import ServiceCustomer
 from typing import Annotated
-from sqlalchemy.ext.asyncio import AsyncSession
-from src.infra.db import get_session
-from fastapi import Depends
 
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from src.infra.db import get_session
+from src.service.service_customer import ServiceCustomer
 
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
 
+
+def get_customer_service(session : SessionDep) -> ServiceCustomer:
+    return ServiceCustomer(session)
+
+
+customer_dep = Annotated[ServiceCustomer, Depends(get_customer_service)]

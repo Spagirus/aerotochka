@@ -8,8 +8,7 @@ from sqlalchemy.exc import IntegrityError
 
 from src.exceptions import Conflict409Error, NotFound404Error
 from src.infra.db import AsyncSession
-from src.infra.models.customer import Customer
-from src.infra.models.license import License
+from src.infra.models import Customer, License
 from src.schemas.customer import CreateCustomer, UpdateCustomer
 
 
@@ -23,7 +22,7 @@ class ServiceCustomer:
         customer = await self.session.scalar(stmt)
         if not isinstance(customer, Customer):
             raise NotFound404Error(code="CUSTOMER_NOT_FOUND",
-                                   message=f"покупатель с id ({customer_id} не найден")
+                                   message=f"покупатель с id ({customer_id}) не найден")
         return customer
 
     async def add_customer(self, data: CreateCustomer) -> Customer:
@@ -46,7 +45,7 @@ class ServiceCustomer:
         customer = await self.session.scalar(stmt)
         if not isinstance(customer, Customer):
             raise NotFound404Error(code="CUSTOMER_NOT_FOUND",
-                                   message=f"покупатель с id ({customer_id} не найден")
+                                   message=f"покупатель с id ({customer_id} не найден") from None
         modification = data.model_dump(exclude_unset=True)
 
         if "birth_date" in modification:

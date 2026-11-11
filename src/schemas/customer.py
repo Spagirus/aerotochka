@@ -11,7 +11,7 @@ from src.schemas.base_schemas import BaseInput, BaseOutput
 
 class CreateCustomer(BaseInput):
     full_name: str
-    phone: str = Field(pattern=r'^+7\[0-9]{10}$')
+    phone: str = Field(pattern=r'^\+7[0-9]{10}$')
     email: str | None = None  # если время будет, добавь проверку почты
     birth_date: date
 
