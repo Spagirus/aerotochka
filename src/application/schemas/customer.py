@@ -3,10 +3,10 @@
 from datetime import date, datetime
 from uuid import UUID
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, ConfigDict
 
-from src.enums import FlightRank
-from src.schemas.base_schemas import BaseInput, BaseOutput
+from src.domain.enums import FlightRank
+from src.application.schemas.base_schemas import BaseInput, BaseOutput
 
 
 class CreateCustomer(BaseInput):
@@ -28,17 +28,18 @@ class ReadCustomer(BaseOutput):
     id: UUID
     full_name: str
     phone: str
-    email: str
-    birth_date: str
-    rank: FlightRank
+    email: str = None
+    birth_date: date
+    rank: FlightRank | None = None
     created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UpdateCustomer(BaseInput):
-    full_name: str | None
-    phone: str | None = Field(pattern=r'^+7\[0-9]{10}$')
-    email: str | None
-    birth_date: date | None
+    full_name: str | None = None
+    phone: str | None = Field(default = None, pattern=r'^+7\[0-9]{10}$')
+    email: str | None = None
+    birth_date: date | None = None
 
     @field_validator("birth_date")
     @classmethod

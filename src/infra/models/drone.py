@@ -6,12 +6,13 @@ from datetime import datetime
 from sqlalchemy import CheckConstraint, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from src.enums import DronePurpose, DroneStatus, FlightRank
+from src.domain.enums import DronePurpose, DroneStatus, FlightRank
 from src.infra.db import Base
+from src.infra.models.utils import get_msk_time
 
 
 class Drone(Base):
-    __tablename__ = "Drones"
+    __tablename__ = "drones"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     sku: Mapped[str] = mapped_column(unique=True, nullable=False)
@@ -25,11 +26,11 @@ class Drone(Base):
     has_camera: Mapped[bool] = mapped_column(nullable=False, default=False)
     price: Mapped[int] = mapped_column(nullable=False)
     status: Mapped[DroneStatus] = mapped_column(nullable=False, server_default=DroneStatus.IN_STOCK)
-    customer_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("Customers.id"))
+    customer_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("customers.id"))
     sold_at: Mapped[datetime | None]
     sold_price: Mapped[int | None]
-    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    updated_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    created_at: Mapped[datetime] = mapped_column(default=get_msk_time)
+    updated_at: Mapped[datetime] = mapped_column(default=get_msk_time)
 
     __table_args__ = (
         CheckConstraint("weight_g > 0", name="weight_g_positive"),

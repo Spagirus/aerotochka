@@ -3,23 +3,22 @@
 from uuid import UUID
 
 from dateutil.relativedelta import relativedelta
-from sqlalchemy import select
+
 from sqlalchemy.exc import IntegrityError
 
-from src.exceptions import Conflict409Error, NotFound404Error
-from src.infra.db import AsyncSession
-from src.infra.models import Customer, License
-from src.schemas.customer import CreateCustomer, UpdateCustomer
+from src.domain.exceptions import Conflict409Error, NotFound404Error
+from src.infra.models import Customer
+from src.application.schemas.customer import CreateCustomer, UpdateCustomer
+from src.infra.repositories.customer import CustomerRepo
 
 
 class ServiceCustomer:
-    def __init__(self, session: AsyncSession):
-        self.session = session
+    def __init__(self, repo: CustomerRepo):
+        self.repo = repo
 
     async def get_customer(self, customer_id: UUID) -> Customer:
         """поиск покупателя по айди"""
-        stmt = select(Customer).where(Customer.id == customer_id)
-        customer = await self.session.scalar(stmt)
+        customer = await self.repo.search_by_id(customer_id)
         if not isinstance(customer, Customer):
             raise NotFound404Error(code="CUSTOMER_NOT_FOUND",
                                    message=f"покупатель с id ({customer_id}) не найден")
@@ -28,12 +27,11 @@ class ServiceCustomer:
     async def add_customer(self, data: CreateCustomer) -> Customer:
         """добавление покупателя, возвращает объект"""
         customer = Customer(**data.model_dump())
-        self.session.add(customer)
-
+        await self.repo.create_customer(customer)
         try:
-            await self.session.commit()
+            await self.repo.create_customer(customer)
         except IntegrityError:
-            await self.session.rollback()
+            await self.repo.session.rollback()
             raise Conflict409Error(code="PHONE_ALREADY_EXISTS",
                                    message=f"Покупатель с таким телефоном"
                                            f"({customer.phone}) уже есть") from None
@@ -41,8 +39,7 @@ class ServiceCustomer:
 
     async def update_customer(self, customer_id: UUID, data: UpdateCustomer) -> Customer:
         """изменение покупателя, проверка на совершеннолетие"""
-        stmt = select(Customer).where(Customer.id == customer_id)
-        customer = await self.session.scalar(stmt)
+        customer = await self.repo.search_by_id(customer_id)
         if not isinstance(customer, Customer):
             raise NotFound404Error(code="CUSTOMER_NOT_FOUND",
                                    message=f"покупатель с id ({customer_id} не найден") from None
@@ -50,9 +47,7 @@ class ServiceCustomer:
 
         if "birth_date" in modification:
             birth_date = modification["birth_date"]
-            stmt = select(License).where(License.customer_id == customer_id)
-            all_issued = (await self.session.scalar(stmt)).all()
-
+            all_issued = await self.repo.search_licenses_customer(customer_id)
             for issue in all_issued:
                 difference = relativedelta(issue.date(), birth_date)
                 if difference.years < 18:
@@ -60,13 +55,14 @@ class ServiceCustomer:
                                            message="Вам должно быть 18"
                                                    " на момент выдачи лицензии!")
 
+
         for key, value in modification.items():
             setattr(customer, key, value)
 
         try:
-            await self.session.commit()
+            await self.repo.session.commit()
         except IntegrityError:
-            await self.session.rollback()
+            await self.repo.session.rollback()
             raise Conflict409Error(
                 code="PHONE_ALREADY_EXISTS",
                 message=f"Покупатель с телефоном {customer.phone} уже есть",

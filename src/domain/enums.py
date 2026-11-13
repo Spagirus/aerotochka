@@ -6,10 +6,10 @@ from enum import StrEnum
 
 class FlightRank(StrEnum):
     """значения летных рангов"""
-    ROOKIE = "Новичок"
-    PILOT = "Пилот"
-    PRO = "Профи"
-    ACE = "Ac"
+    ROOKIE = "ROOKIE"
+    PILOT = "PILOT"
+    PRO = "PRO"
+    ACE = "ACE"
 
     @property
     def rank(self):

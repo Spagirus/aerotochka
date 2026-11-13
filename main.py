@@ -3,14 +3,14 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from src.api.customer_api import router as customer_router
-from src.exceptions import NotFound404Error, Conflict409Error
+from src.domain.exceptions import NotFound404Error, Conflict409Error
 
 app = FastAPI()
 
 app.include_router(customer_router)
 
 
-@app.exception_handlers(NotFound404Error)
+@app.exception_handler(NotFound404Error)
 def error_404(request: Request, err: NotFound404Error):
     return JSONResponse(
         status_code=404,
@@ -24,10 +24,10 @@ def error_404(request: Request, err: NotFound404Error):
     )
 
 
-@app.exception_handlers(Conflict409Error)
-def error_400(request: Request, err: NotFound404Error):
+@app.exception_handler(Conflict409Error)
+def error_409(request: Request, err: Conflict409Error):
     return JSONResponse(
-        status_code=404,
+        status_code=409,
         content=
         {
             "detail": {

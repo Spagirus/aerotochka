@@ -1,5 +1,6 @@
 """Кастомные ошибки 404 и 409"""
 
+
 class MainError(Exception):
     def __init__(self, code, message):
         self.code = code
