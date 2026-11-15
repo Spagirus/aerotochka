@@ -1,8 +1,12 @@
+"""СЂРµРїРѕР·РёС‚РѕСЂРёР№ РїРѕРєСѓРїР°С‚РµР»СЏ (СЂР°Р±РѕС‚Р° СЃ Р±Рґ)"""
+
 from uuid import UUID
+
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.infra.models.customer import Customer
 from src.infra.models.license import License
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 
 
 class CustomerRepo:
@@ -10,24 +14,24 @@ class CustomerRepo:
         self.session = session
 
     async def search_by_id(self, customer_id: UUID) -> Customer | None:
-        """поиск покупателя по айди"""
+        """РїРѕРёСЃРє РїРѕРєСѓРїР°С‚РµР»СЏ РїРѕ Р°Р№РґРё"""
         return await self.session.get(Customer, customer_id)
 
     async def create_customer(self, customer) -> Customer:
-        """создание покупателя"""
+        """СЃРѕР·РґР°РЅРёРµ РїРѕРєСѓРїР°С‚РµР»СЏ"""
         self.session.add(customer)
         await self.session.commit()
         await self.session.refresh(customer)
         return customer
 
     async def update_customer(self, customer) -> Customer:
-        """изменение покупателя"""
+        """РёР·РјРµРЅРµРЅРёРµ РїРѕРєСѓРїР°С‚РµР»СЏ"""
         await self.session.commit()
         await self.session.refresh(customer)
         return customer
 
-    async def search_licenses_customer(self, customer_id: UUID) -> License:
-        """поиск всех лицензий автора"""
+    async def search_licenses_customer(self, customer_id: UUID) -> list[License]:
+        """РїРѕРёСЃРє РІСЃРµС… Р»РёС†РµРЅР·РёР№ Р°РІС‚РѕСЂР°"""
         stmt = select(License).where(License.customer_id == customer_id)
-        res = await self.session.scalar(stmt)
-        return res
+        result = await self.session.scalars(stmt)
+        return list(result.all())

@@ -3,11 +3,13 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from src.api.customer_api import router as customer_router
-from src.domain.exceptions import NotFound404Error, Conflict409Error
+from src.api.license import router as license_router
+from src.domain.exceptions import Conflict409Error, NotFound404Error
 
 app = FastAPI()
 
 app.include_router(customer_router)
+app.include_router(license_router)
 
 
 @app.exception_handler(NotFound404Error)
@@ -40,3 +42,5 @@ def error_409(request: Request, err: Conflict409Error):
 
 if __name__ == '__main__':
     uvicorn.run("main:app", reload=True)
+
+    # ab844c2f-881e-42ba-a8f1-868aa39e6b86

@@ -2,14 +2,14 @@
 
 import uuid
 from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
 from dateutil.relativedelta import relativedelta
-from zoneinfo import ZoneInfo
 
 
 def get_valid_until() -> date:
     """получение срока лицензии +1 год"""
-    valid = datetime.now(ZoneInfo("Europe/Moscow")) + relativedelta(years=1)
+    valid = (datetime.now(ZoneInfo("Europe/Moscow")) + relativedelta(years=1)).date()
     return valid
 
 

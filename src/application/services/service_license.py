@@ -1,8 +1,16 @@
-from src.infra.repositories.license import LicenseRepo
-from src.infra.models import License
-from src.application.schemas.license import CreateLicense
-from src.domain.exceptions import NotFound404Error
+"""сервис Лицензии, бизнес правила, проверки и т.д"""
+from uuid import UUID
+
+from dateutil.relativedelta import relativedelta
+
+from src.application.schemas.license import CreateLicense, RevokeBody
+from src.domain.enums import LicenseStatus
+from src.domain.exceptions import Conflict409Error, NotFound404Error
+from src.infra.models import Customer, License
+from src.infra.models.utils import get_msk_time
 from src.infra.repositories.customer import CustomerRepo
+from src.infra.repositories.license import LicenseRepo
+
 
 class ServiceLicense:
     def __init__(self, repo: LicenseRepo, customer_repo: CustomerRepo):
@@ -10,15 +18,99 @@ class ServiceLicense:
         self.customer_repo = customer_repo
 
     async def get_license(self, license_id) -> License:
+        """получение лицензии через её id"""
+        today = get_msk_time()
+        await self.repo.check_execute(today.date())
         license = await self.repo.search_by_id(license_id)
         if not isinstance(license, License):
             raise NotFound404Error(code="LICENSE_NOT_FOUND",
-                                   message=f"���������� � id ({license}) �� ������")
+                                   message=f"лицензия с id ({license}) не найдена")
         return license
 
     async def create_license(self, data: CreateLicense) -> License:
-        new_license = License(**data.model_dump())
-        license_customer = await self.repo.search_by_customer(new_license.customer_id)
+        """
+        создание / повышение лицензии,
+        проверка лимита 3 в день,
+        совершеннолетие покупателя,
+        проверка на наличие других действующих выше или того же ранга лицензий
+        """
+        now = get_msk_time()
+        today = now.date()
+        await self.repo.check_execute(today)
+        customer = await self.customer_repo.search_by_id(data.customer_id)
+        if not isinstance(customer, Customer):
+            raise NotFound404Error(
+                code="LICENSE_NOT_FOUND", message=f"покупатель с id ({data.customer_id}) не найден"
+            )
+
+        if relativedelta(today, customer.birth_date).years < 18:
+            raise Conflict409Error(code="CUSTOMER_UNDERAGE",
+                                   message="покупателю нет 18 лет на дату выдачи")
+
+        start_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_day = start_day + relativedelta(days=1)
+        if await self.repo.check_limit(start_day, end_day) >= 3:
+            raise Conflict409Error(code="DAILY_LIMIT_REACHED",
+                                   message="за сегодняшний день (по Москве)"
+                                           " уже выдано 3 лицензии")
+
+        active = await self.repo.get_active_customer_id(data.customer_id, today)
+        if active:
+            if active.rank.rank >= data.rank.rank:
+                raise Conflict409Error(
+                    code="ACTIVE_LICENSE_EXISTS",
+                    message="уже есть действующая лицензия того же или более высокого ранга",
+                )
+
+            active.status = LicenseStatus.REVOKED
+            active.revoke_reason = "заменена новой лицензией"
+        return await self.repo.create_license(License(**data.model_dump()))
 
 
+    async def suspend_license(self,license_id: UUID) -> License:
+        """приостановка лицензии, проверка что лицензия активна"""
+        today = get_msk_time()
+        await self.repo.check_execute(today.date())
+        license = await self.repo.search_by_id(license_id)
+        if not isinstance(license, License):
+            raise NotFound404Error(
+                code="LICENSE_NOT_FOUND", message=f"лицензия с id ({license_id}) не найдена")
+        if license.status != LicenseStatus.ACTIVE:
+            raise Conflict409Error(code="INVALID_LICENSE_TRANSITION", message="лицензия не активна")
+        license.status = LicenseStatus.SUSPENDED
+        return await self.repo.update_license(license)
 
+    async def resume_license(self, license_id: UUID) -> License:
+        """
+        возобновление приостановленной лицензии,
+        проверяет что лицензия приостановлена или уже истекла
+        """
+        today = get_msk_time()
+        await self.repo.check_execute(today.date())
+        license = await self.repo.search_by_id(license_id)
+        if not isinstance(license, License):
+            raise NotFound404Error(
+                code="LICENSE_NOT_FOUND", message=f"лицензия с id ({license_id}) не найдена"
+            )
+        if license.status != LicenseStatus.SUSPENDED or license and license.valid_until < today.date():
+            raise Conflict409Error(code="INVALID_LICENSE_TRANSITION",
+                                   message="лицензия не приостановлена или просрочена")
+        license.status = LicenseStatus.ACTIVE
+        return await    self.repo.update_license(license)
+
+    async def revoke_license(self, license_id: UUID, revoke: RevokeBody) -> License:
+        """отзыв лицензии, принимает причину, проверка что лицензия уже не отозвана"""
+        today = get_msk_time()
+        await self.repo.check_execute(today.date())
+        license = await self.repo.search_by_id(license_id)
+        if not isinstance(license, License):
+            raise NotFound404Error(
+                code="LICENSE_NOT_FOUND", message=f"лицензия с id ({license_id}) не найдена"
+            )
+        if license.status in (LicenseStatus.REVOKED, LicenseStatus.EXPIRED):
+            raise Conflict409Error(code="INVALID_LICENSE_TRANSITION",
+                                   message= "лицензия уже отозвана или истекла")
+        license.status = LicenseStatus.REVOKED
+        license.revoke_reason = revoke.reason
+
+        return await self.repo.update_license(license)

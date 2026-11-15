@@ -1,14 +1,14 @@
 """модуль модельки Дрона"""
 
 import uuid
-from datetime import datetime
+from datetime import datetime, date
 
-from sqlalchemy import ForeignKey, String, Uuid, func
+from sqlalchemy import ForeignKey, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.domain.enums import FlightRank, LicenseStatus
 from src.infra.db import Base
-from src.infra.models.utils import get_key, get_valid_until, get_msk_time
+from src.infra.models.utils import get_key, get_msk_time, get_valid_until
 
 
 class License(Base):
@@ -16,9 +16,9 @@ class License(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     key: Mapped[str] = mapped_column(String(36),unique=True, default=get_key, nullable=False)
-    customer_id: Mapped[Uuid] = mapped_column(ForeignKey("customers.id", ondelete="RESTRICT"))
+    customer_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("customers.id", ondelete="RESTRICT"))
     rank: Mapped[FlightRank] = mapped_column(nullable=False)
-    status: Mapped[LicenseStatus] = mapped_column(nullable=False, server_default=LicenseStatus.ACTIVE)
+    status: Mapped[LicenseStatus] = mapped_column(nullable=False, default=LicenseStatus.ACTIVE)
     issued_at: Mapped[datetime] = mapped_column(nullable=False, default=get_msk_time)
-    valid_until: Mapped[datetime] = mapped_column(nullable=False, default=get_valid_until)
+    valid_until: Mapped[date] = mapped_column(nullable=False, default=get_valid_until)
     revoke_reason: Mapped[str | None]

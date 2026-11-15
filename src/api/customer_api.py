@@ -1,10 +1,10 @@
-
+"""ендпоинты покупателя"""
 from uuid import UUID
 
 from fastapi import APIRouter
 
 from src.api.dependens import customer_dep
-from src.application.schemas.customer import ReadCustomer, CreateCustomer, UpdateCustomer
+from src.application.schemas.customer import CreateCustomer, ReadCustomer, UpdateCustomer
 
 router = APIRouter(
     tags=["Customers"],

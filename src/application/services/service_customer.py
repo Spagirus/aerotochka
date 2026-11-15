@@ -3,12 +3,11 @@
 from uuid import UUID
 
 from dateutil.relativedelta import relativedelta
-
 from sqlalchemy.exc import IntegrityError
 
+from src.application.schemas.customer import CreateCustomer, UpdateCustomer
 from src.domain.exceptions import Conflict409Error, NotFound404Error
 from src.infra.models import Customer
-from src.application.schemas.customer import CreateCustomer, UpdateCustomer
 from src.infra.repositories.customer import CustomerRepo
 
 
@@ -27,7 +26,6 @@ class ServiceCustomer:
     async def add_customer(self, data: CreateCustomer) -> Customer:
         """добавление покупателя, возвращает объект"""
         customer = Customer(**data.model_dump())
-        await self.repo.create_customer(customer)
         try:
             await self.repo.create_customer(customer)
         except IntegrityError:
@@ -48,6 +46,7 @@ class ServiceCustomer:
         if "birth_date" in modification:
             birth_date = modification["birth_date"]
             all_issued = await self.repo.search_licenses_customer(customer_id)
+
             for issue in all_issued:
                 difference = relativedelta(issue.date(), birth_date)
                 if difference.years < 18:

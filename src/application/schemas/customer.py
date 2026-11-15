@@ -3,13 +3,14 @@
 from datetime import date, datetime
 from uuid import UUID
 
-from pydantic import Field, field_validator, ConfigDict
+from pydantic import ConfigDict, Field, field_validator
 
-from src.domain.enums import FlightRank
 from src.application.schemas.base_schemas import BaseInput, BaseOutput
+from src.domain.enums import FlightRank
 
 
 class CreateCustomer(BaseInput):
+    """схема для создания покупателя, проверяет на актуальную дату"""
     full_name: str
     phone: str = Field(pattern=r'^\+7[0-9]{10}$')
     email: str | None = None  # если время будет, добавь проверку почты
@@ -25,10 +26,11 @@ class CreateCustomer(BaseInput):
 
 
 class ReadCustomer(BaseOutput):
+    """схема ответа покупателя"""
     id: UUID
     full_name: str
     phone: str
-    email: str = None
+    email: str | None = None
     birth_date: date
     rank: FlightRank | None = None
     created_at: datetime
@@ -36,8 +38,9 @@ class ReadCustomer(BaseOutput):
 
 
 class UpdateCustomer(BaseInput):
+    """схема ответа покупателя, все поля не обязательные"""
     full_name: str | None = None
-    phone: str | None = Field(default = None, pattern=r'^+7\[0-9]{10}$')
+    phone: str | None = Field(default = None, pattern=r'^+7\[0-9]{10}$', examples=["+79503098420"])
     email: str | None = None
     birth_date: date | None = None
 
