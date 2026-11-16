@@ -16,8 +16,9 @@ class Part(Base):
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     purpose: Mapped[DronePurpose] = mapped_column(nullable=False)
     price: Mapped[int] = mapped_column(nullable=False)
-    drone_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("drones.id"))
+    drone_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("drones.id"), default=None)
 
     __table_args__ = (
-        CheckConstraint("price > 0", name="part_price_positive")
+        CheckConstraint("price > 0", name="part_price_positive"),
     )
+

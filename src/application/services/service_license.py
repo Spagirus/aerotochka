@@ -54,7 +54,7 @@ class ServiceLicense:
                                    message="за сегодняшний день (по Москве)"
                                            " уже выдано 3 лицензии")
 
-        active = await self.repo.get_active_customer_id(data.customer_id, today)
+        active = await self.repo.get_active_customer_id(data.customer_id, now)
         if active:
             if active.rank.rank >= data.rank.rank:
                 raise Conflict409Error(

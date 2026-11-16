@@ -1,9 +1,13 @@
-"""схемы pydantic для дрона"""
-from pydantic import Field
-from .base_schemas import BaseInput, BaseOutput
-from src.domain.enums import DronePurpose, FlightRank, DroneStatus
-from uuid import UUID
+"""СЃС…РµРјС‹ pydantic РґР»СЏ РґСЂРѕРЅР°"""
 from datetime import datetime
+from uuid import UUID
+
+from pydantic import Field
+
+from src.domain.enums import DronePurpose, DroneStatus, FlightRank
+
+from .base_schemas import BaseInput, BaseOutput
+
 
 class CreateDrone(BaseInput):
     sku: str = Field(min_length=1)
@@ -12,10 +16,11 @@ class CreateDrone(BaseInput):
     purpose: DronePurpose
     rank: FlightRank
     weight_g: int = Field(gt=0)
-    max_flight_min: int = Field(gt=0)
+    max_flight_time_min: int = Field(gt=0)
     max_range_m: int = Field(gt=0)
     has_camera: bool = Field(default=False)
     price: int = Field(gt=0)
+
 
 class ReadDrone(BaseOutput):
     id: UUID
@@ -25,7 +30,7 @@ class ReadDrone(BaseOutput):
     purpose: DronePurpose
     rank: FlightRank
     weight_g: int
-    max_flight_min: int
+    max_flight_time_min: int
     max_range_m: int
     has_camera: bool
     price: int
@@ -37,18 +42,20 @@ class ReadDrone(BaseOutput):
     created_at: datetime
     updated_at: datetime
 
-class UpdateDrone(BaseOutput):
+
+class UpdateDrone(BaseInput):
     sku: str | None = Field(min_length=1, default=None)
     name: str | None = Field(min_length=1, max_length=200, default=None)
     manufacturer: str | None = Field(min_length=1, max_length=100, default=None)
     purpose: DronePurpose | None = None
     rank: FlightRank | None = None
-    weight_g: int | None = None
-    max_flight_min: int | None = None
-    max_range_m: int | None = None
-    has_camera: bool | None = None
+    weight_g: int | None = Field(default=None, gt=0)
+    max_flight_time_min: int | None = Field(default=None, gt=0)
+    max_range_m: int | None = Field(default=None, gt=0)
+    has_camera: bool | None = Field(default=None, gt=0)
     price: int | None = Field(gt=0, default=None)
     status: DroneStatus | None = None
+
 
 class PurchaseDrone(BaseInput):
     customer_id: UUID

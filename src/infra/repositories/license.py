@@ -58,10 +58,15 @@ class LicenseRepo:
         await self.session.refresh(license)
         return license
 
-    async def check_limit(self, start_day: datetime, end_day: datetime)-> int:
+    async def check_limit(self, start_day: datetime, end_day: datetime) -> int:
         """проверка лимита 3 в день"""
         stmt = select(func.count(License.id)).where(License.issued_at >= start_day,
                                      License.issued_at < end_day)
         res = await self.session.scalar(stmt)
         return res or 0
 
+    async def get_last_license_customer(self, customer_id: UUID) -> License | None:
+        stmt = (select(License)
+                .where(License.customer_id == customer_id)
+                .order_by(License.issued_at.desc()).limit(1))
+        return await self.session.scalar(stmt)

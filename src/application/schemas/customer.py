@@ -40,7 +40,7 @@ class ReadCustomer(BaseOutput):
 class UpdateCustomer(BaseInput):
     """схема ответа покупателя, все поля не обязательные"""
     full_name: str | None = None
-    phone: str | None = Field(default = None, pattern=r'^+7\[0-9]{10}$', examples=["+79503098420"])
+    phone: str | None = Field(default=None, pattern=r'^\+7[0-9]{10}$', examples=["+79503098420"])
     email: str | None = None
     birth_date: date | None = None
 
@@ -48,7 +48,7 @@ class UpdateCustomer(BaseInput):
     @classmethod
     def valid_date(cls, b_date: date):
         """проверка на актуальное время"""
-        if b_date > date.today():
+        if b_date is not None and b_date > date.today():
             raise ValueError("введённая дата находится в будущем")
         return b_date
 

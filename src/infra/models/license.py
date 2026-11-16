@@ -1,9 +1,9 @@
 """модуль модельки Дрона"""
 
 import uuid
-from datetime import datetime, date
+from datetime import date, datetime
 
-from sqlalchemy import ForeignKey, String, Uuid
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.domain.enums import FlightRank, LicenseStatus
