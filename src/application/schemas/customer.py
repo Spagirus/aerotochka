@@ -11,7 +11,7 @@ from src.domain.enums import FlightRank
 
 class CreateCustomer(BaseInput):
     """схема для создания покупателя, проверяет на актуальную дату"""
-    full_name: str
+    full_name: str = Field(min_length=1)
     phone: str = Field(pattern=r'^\+7[0-9]{10}$')
     email: str | None = None  # если время будет, добавь проверку почты
     birth_date: date

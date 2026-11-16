@@ -25,10 +25,10 @@ class Drone(Base):
     max_range_m: Mapped[int] = mapped_column(nullable=False)
     has_camera: Mapped[bool] = mapped_column(nullable=False, default=False)
     price: Mapped[int] = mapped_column(nullable=False)
-    status: Mapped[DroneStatus] = mapped_column(nullable=False, server_default=DroneStatus.IN_STOCK)
-    customer_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("customers.id"))
-    sold_at: Mapped[datetime | None]
-    sold_price: Mapped[int | None]
+    status: Mapped[DroneStatus] = mapped_column(nullable=False, default=DroneStatus.IN_STOCK)
+    customer_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("customers.id"), default=None)
+    sold_at: Mapped[datetime | None] = mapped_column(default=None)
+    sold_price: Mapped[int | None] = mapped_column(default=None)
     created_at: Mapped[datetime] = mapped_column(default=get_msk_time)
     updated_at: Mapped[datetime] = mapped_column(default=get_msk_time)
 
