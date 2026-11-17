@@ -5,9 +5,10 @@ from uuid import UUID
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.domain.enums import FlightRank, LicenseStatus
 from src.infra.models.customer import Customer
 from src.infra.models.license import License
-
+from datetime import date
 
 class CustomerRepo:
     def __init__(self, session: AsyncSession):
@@ -36,8 +37,17 @@ class CustomerRepo:
         result = await self.session.scalars(stmt)
         return list(result.all())
 
+    async def get_rank_customer(self, customer_id: UUID, today: date) -> FlightRank | None:
+        stmt = (select(License.rank).where(License.customer_id == customer_id,
+                                     License.status == LicenseStatus.ACTIVE,
+                                     License.valid_until >= today,
+                                     ).order_by(License.issued_at.desc()).limit(1))
+        return await self.session.scalar(stmt)
+
     async def get_customers(self, phone: str | None, limit: int, offset: int):
         stmt = select(Customer)
         if phone is not None:
             stmt = stmt.where(Customer.phone == phone)
         total = await self.session.scalar(select(func.count()).select_from(stmt.subquery()))
+        stmt = stmt.order_by(Customer.created_at.desc()).limit(limit).offset(offset)
+        return list((await self.session.scalars(stmt)).all()), total

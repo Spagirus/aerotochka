@@ -53,8 +53,8 @@ class UpdateCustomer(BaseInput):
         return b_date
 
 class PaginationCustomer(BaseInput):
-    total: int
     items: list[ReadCustomer]
+    total: int
     limit: int
     offset: int
 

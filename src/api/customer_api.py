@@ -1,11 +1,12 @@
 """ендпоинты покупателя"""
+from idlelib.query import Query
 from uuid import UUID
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 
 from src.api.dependens import customer_dep
-from src.application.schemas.customer import CreateCustomer, ReadCustomer, UpdateCustomer
-
+from src.application.schemas.customer import CreateCustomer, ReadCustomer, UpdateCustomer, PaginationCustomer
+from typing import Annotated
 router = APIRouter(
     tags=["Customers"],
     prefix="/api/v1/customers"
@@ -24,6 +25,12 @@ async def add_customer(data: CreateCustomer, service: customer_dep) -> ReadCusto
 @router.patch("/{customer_id}")
 async def patch_customer(customer_id: UUID, service: customer_dep, data: UpdateCustomer) -> ReadCustomer:
     return await service.update_customer(customer_id=customer_id, data=data)
-
-
+@router.get("/")
+async def get_customers(
+        service: customer_dep,
+        phone: str | None = None,
+        limit: Annotated[int, Query(ge=1, le=100)] = 20,
+        offset: Annotated[int, Query(ge=0)] = 0,
+        ) -> PaginationCustomer:
+    return await service.pagination_customer(phone=phone, limit=limit, offset=offset)
 
