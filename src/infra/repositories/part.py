@@ -23,7 +23,7 @@ class PartRepo:
         return part
 
     async def update_part(self, part) -> Part:
-        """изменение покупателя"""
+        """изменение запчасти"""
         await self.session.commit()
         await self.session.refresh(part)
         return part

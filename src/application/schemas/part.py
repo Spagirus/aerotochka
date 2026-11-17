@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from pydantic import ConfigDict, Field
+from pydantic import ConfigDict, Field, field_validator
 
 from src.application.schemas.base_schemas import BaseInput, BaseOutput
 from src.domain.enums import DronePurpose
@@ -32,3 +32,11 @@ class UpdatePart(BaseInput):
     purpose: DronePurpose | None = None
     price: int | None = Field(gt=0, default=None)
     drone_id: UUID | None = None
+
+    @field_validator("name", "purpose", "price")
+    @classmethod
+    def check_null(cls, value):
+        if value is not None:
+            return value
+        return ValueError("значение не может быть null")
+

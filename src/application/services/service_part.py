@@ -12,10 +12,11 @@ from src.infra.repositories.part import PartRepo
 from src.infra.repositories.drone import DroneRepo
 from src.infra.models.drone import Drone
 
+
 class ServicePart:
     def __init__(self, repo: PartRepo, drone_repo: DroneRepo):
         self.repo = repo
-        self.drone_repo = repo
+        self.drone_repo = drone_repo
 
     async def get_part(self, part_id: UUID) -> Part:
         """поиск запчасти по айди"""
@@ -43,28 +44,25 @@ class ServicePart:
         if not isinstance(part, Part):
             raise NotFound404Error(code="PART_NOT_FOUND",
                                    message=f"запчасть с id ({part_id}) не найдена") from None
+
         modification = data.model_dump(exclude_unset=True)
+        if "drone_id" in modification:
+            new_drone_id = modification["drone_id"]
+            if (part.drone_id is not None and new_drone_id is not None):
+                raise Conflict409Error(code="PART_ALREADY_ATTACHED", message="запчасть уже привязана к другому дрону.")
 
-        if "birth_date" in modification:
-            birth_date = modification["birth_date"]
-            all_issued = await self.repo.search_licenses_part(part_id)
 
-            for issue in all_issued:
-                difference = relativedelta(issue.issued_at, birth_date)
-                if difference.years < 18:
-                    raise Conflict409Error(code="CUSTOMER_UNDERAGE",
-                                           message="Вам должно быть 18"
-                                                   " на момент выдачи лицензии!")
 
-        for key, value in modification.items():
-            setattr(part, key, value)
+        # for key, value in modification.items():
+        #     setattr(part, key, value)
+        #
+        # try:
+        #     await self.repo.update_part(part)
+        # except IntegrityError:
+        #     await self.repo.session.rollback()
+        #     raise Conflict409Error(
+        #         code="PHONE_ALREADY_EXISTS",
+        #         message=f"Покупатель с телефоном {part} уже есть",
+        #     ) from None
+        # return part
 
-        try:
-            await self.repo.update_part(part)
-        except IntegrityError:
-            await self.repo.session.rollback()
-            raise Conflict409Error(
-                code="PHONE_ALREADY_EXISTS",
-                message=f"Покупатель с телефоном {part} уже есть",
-            ) from None
-        return part

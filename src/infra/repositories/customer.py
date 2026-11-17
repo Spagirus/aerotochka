@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.infra.models.customer import Customer
@@ -35,3 +35,9 @@ class CustomerRepo:
         stmt = select(License).where(License.customer_id == customer_id)
         result = await self.session.scalars(stmt)
         return list(result.all())
+
+    async def get_customers(self, phone: str | None, limit: int, offset: int):
+        stmt = select(Customer)
+        if phone is not None:
+            stmt = stmt.where(Customer.phone == phone)
+        total = await self.session.scalar(select(func.count()).select_from(stmt.subquery()))
