@@ -8,8 +8,8 @@ from sqlalchemy.exc import IntegrityError
 from src.application.schemas.customer import CreateCustomer, UpdateCustomer
 from src.domain.exceptions import Conflict409Error, NotFound404Error
 from src.infra.models import Customer
-from src.infra.repositories.customer import CustomerRepo
 from src.infra.models.utils import get_msk_time
+from src.infra.repositories.customer import CustomerRepo
 
 
 class ServiceCustomer:

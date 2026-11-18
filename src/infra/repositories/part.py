@@ -2,11 +2,12 @@
 
 from uuid import UUID
 
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.infra.models.part import Part
 from src.domain.enums import DronePurpose
-from sqlalchemy import select, func
+from src.infra.models.part import Part
+
 
 class PartRepo:
     def __init__(self, session: AsyncSession):
@@ -46,9 +47,9 @@ class PartRepo:
         if purpose is not None:
             stmt = stmt.where(Part.purpose == purpose)
         if attached is True:
-            stmt = stmt.where(Part.drone_id is not None)
+            stmt = stmt.where(Part.drone_id.is_not_(None))
         if attached is False:
-            stmt = stmt.where(Part.drone_id is None)
+            stmt = stmt.where(Part.drone_id.is_(None))
         total = await self.session.scalar(select(func.count()).select_from(stmt.subquery())) or 0
         stmt = stmt.order_by(Part.price.desc()).limit(limit).offset(offset)
         return list((await self.session.scalars(stmt)).all()), total

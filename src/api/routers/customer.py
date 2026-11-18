@@ -1,23 +1,24 @@
 """ендпоинты покупателя"""
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Query
 
 from src.api.dependens import customer_dep
-from src.application.schemas.customer import CreateCustomer, ReadCustomer, UpdateCustomer, PaginationCustomer
-from typing import Annotated
+from src.application.schemas.customer import CreateCustomer, PaginationCustomer, ReadCustomer, UpdateCustomer
+
 router = APIRouter(
     tags=["Customers"],
     prefix="/api/v1/customers"
 )
 
 
-@router.get("/{id}")
+@router.get("/{customer_id}")
 async def get_customer(customer_id: UUID, service: customer_dep) -> ReadCustomer:
     return await service.get_customer(customer_id=customer_id)
 
 
-@router.post("/", status_code=201)
+@router.post("", status_code=201)
 async def add_customer(data: CreateCustomer, service: customer_dep) -> ReadCustomer:
     return await service.add_customer(data)
 
@@ -25,6 +26,7 @@ async def add_customer(data: CreateCustomer, service: customer_dep) -> ReadCusto
 @router.patch("/{customer_id}")
 async def patch_customer(customer_id: UUID, service: customer_dep, data: UpdateCustomer) -> ReadCustomer:
     return await service.update_customer(customer_id=customer_id, data=data)
+
 @router.get("/")
 async def get_customers(
         service: customer_dep,

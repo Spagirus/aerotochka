@@ -26,7 +26,11 @@ def get_license_service(session: SessionDep) -> ServiceLicense:
 
 
 def get_drone_service(session: SessionDep) -> ServiceDrone:
-    return ServiceDrone(repo=DroneRepo(session), customer_repo=CustomerRepo(session), license_repo=LicenseRepo(session))
+    return ServiceDrone(
+        repo=DroneRepo(session),
+        customer_repo=CustomerRepo(session),
+        license_repo=LicenseRepo(session)
+    )
 
 
 def get_part_service(session: SessionDep) -> ServicePart:

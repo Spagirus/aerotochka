@@ -52,7 +52,7 @@ class UpdateDrone(BaseInput):
     weight_g: int | None = Field(default=None, gt=0)
     max_flight_time_min: int | None = Field(default=None, gt=0)
     max_range_m: int | None = Field(default=None, gt=0)
-    has_camera: bool | None = Field(default=None, gt=0)
+    has_camera: bool | None = Field(default=None)
     price: int | None = Field(gt=0, default=None)
     status: DroneStatus | None = None
 

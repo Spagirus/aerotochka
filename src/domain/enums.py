@@ -28,7 +28,7 @@ class DronePurpose(StrEnum):
     TOY = "toy"
     CAMERA = "camera"
     FPV = "fpv"
-    AGRO = "argo"
+    AGRO = "agro"
     CARGO = "cargo"
     INSPECTION = "inspection"
 

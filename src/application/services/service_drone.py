@@ -1,9 +1,10 @@
 from uuid import UUID
 
-from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
-from src.application.schemas.drone import CreateDrone, PurchaseDrone, UpdateDrone, FlightRank
-from src.domain.enums import DroneStatus, LicenseStatus, DronePurpose
+from sqlalchemy.exc import IntegrityError
+
+from src.application.schemas.drone import CreateDrone, FlightRank, PurchaseDrone, UpdateDrone
+from src.domain.enums import DronePurpose, DroneStatus, LicenseStatus
 from src.domain.exceptions import Conflict409Error, NotFound404Error
 from src.infra.models import Drone
 from src.infra.models.customer import Customer
@@ -81,12 +82,15 @@ class ServiceDrone:
 
         last_license = await self.license_repo.get_last_license_customer(customer_id.customer_id)
         if last_license is None or last_license.status == LicenseStatus.REVOKED:
-            raise Conflict409Error(code="NO_LICENSE", message="У покупателя нет лицензии или последняя отозвана")
-        if last_license.status == LicenseStatus.SUSPENDED:
-            raise Conflict409Error(code="LICENSE_SUSPENDED", message="последняя лицензия приостановлена")
+            raise Conflict409Error(
+                code="NO_LICENSE",
+                message="У покупателя нет лицензии или последняя отозвана"
+            )
         now = get_msk_time()
         today = now.date()
         await self.license_repo.check_execute(today)
+        if last_license.status == LicenseStatus.SUSPENDED:
+            raise Conflict409Error(code="LICENSE_SUSPENDED", message="последняя лицензия приостановлена")
         if last_license.status == LicenseStatus.EXPIRED:
             raise Conflict409Error(code="LICENSE_EXPIRED", message="последняя лицензия истекла")
         if last_license.rank.rank < drone.rank.rank:

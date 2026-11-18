@@ -131,7 +131,10 @@ class ServiceLicense:
         await self.repo.check_execute(today)
         license = await self.get_license(license_id)
         if license.status != LicenseStatus.ACTIVE or license.valid_until < today:
-            raise Conflict409Error(code="INVALID_LICENSE_RENEWAL", message="лицензия должна быть активна для продления")
+            raise Conflict409Error(
+                code="INVALID_LICENSE_RENEWAL",
+                message="лицензия должна быть активна для продления"
+            )
 
         if license.valid_until > today + relativedelta(months=3):
             raise Conflict409Error(

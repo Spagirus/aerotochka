@@ -2,10 +2,10 @@ import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from src.api.customer_api import router as customer_router
-from src.api.drone import router as drone_router
-from src.api.license import router as license_router
-from src.api.part import router as part_router
+from src.api.routers.customer import router as customer_router
+from src.api.routers.drone import router as drone_router
+from src.api.routers.license import router as license_router
+from src.api.routers.part import router as part_router
 from src.domain.exceptions import Conflict409Error, NotFound404Error
 
 app = FastAPI(title="AэроТочка", description="Интернет-магазин дронов")

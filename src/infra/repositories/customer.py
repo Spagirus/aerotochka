@@ -1,14 +1,15 @@
 """репозиторий покупателя (работа с бд)"""
 
+from datetime import date
 from uuid import UUID
 
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.domain.enums import FlightRank, LicenseStatus
 from src.infra.models.customer import Customer
 from src.infra.models.license import License
-from datetime import date
+
 
 class CustomerRepo:
     def __init__(self, session: AsyncSession):

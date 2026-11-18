@@ -5,7 +5,6 @@ from uuid import UUID
 
 from src.domain.enums import FlightRank, LicenseStatus
 
-
 from .base_schemas import BaseInput, BaseOutput
 
 

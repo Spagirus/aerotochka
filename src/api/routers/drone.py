@@ -1,12 +1,13 @@
 """ендпоинты дрона"""
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Query
-from src.domain.enums import FlightRank, DronePurpose, DroneStatus
-from src.application.schemas.part import PaginationPart
+
 from src.api.dependens import drone_dep
-from src.application.schemas.drone import CreateDrone, ReadDrone, UpdateDrone, PurchaseDrone, PaginationDrone
-from typing import Annotated
+from src.application.schemas.drone import CreateDrone, PaginationDrone, PurchaseDrone, ReadDrone, UpdateDrone
+from src.application.schemas.part import PaginationPart
+from src.domain.enums import DronePurpose, DroneStatus, FlightRank
 
 router = APIRouter(
     tags=["Drones"],
@@ -14,12 +15,12 @@ router = APIRouter(
 )
 
 
-@router.get("/{id}")
+@router.get("/{drone_id}")
 async def get_drone(drone_id: UUID, service: drone_dep) -> ReadDrone:
     return await service.get_drone(drone_id=drone_id)
 
 
-@router.post("/", status_code=201)
+@router.post("", status_code=201)
 async def add_drone(data: CreateDrone, service: drone_dep) -> ReadDrone:
     return await service.add_drone(data)
 
@@ -64,7 +65,7 @@ async def get_drones(
             max_price=max_price
     )
 
-@router.get("{drone_id}/parts")
+@router.get("/{drone_id}/parts")
 async def get_parts_drone(
         service: drone_dep,
         drone_id: UUID,

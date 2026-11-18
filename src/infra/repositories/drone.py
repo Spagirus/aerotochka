@@ -1,11 +1,11 @@
 from uuid import UUID
 
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.domain.enums import DronePurpose, DroneStatus, FlightRank
 from src.infra.models.drone import Drone
 from src.infra.models.part import Part
-from src.domain.enums import DronePurpose, DroneStatus, FlightRank
 
 
 class DroneRepo:
@@ -56,11 +56,12 @@ class DroneRepo:
         if rank is not None:
             stmt = stmt.where(Drone.rank == rank)
         if max_rank is not None:
-            stmt = stmt.where(Drone.rank <= max_rank.rank)
+            ranks = [rankk for rankk in FlightRank if rankk.rank <= max_rank.rank]
+            stmt = stmt.where(Drone.rank.in_(ranks))
         if status is not None:
             stmt = stmt.where(Drone.status == status)
         if manufacturer is not None:
-            stmt = stmt.where(Drone.manufacturer.lower().strip() == manufacturer.lower().strip())
+            stmt = stmt.where(func.lower(Drone.manufacturer) == manufacturer.strip().lower())
         if has_camera is not None:
             stmt = stmt.where(Drone.has_camera == has_camera)
         if min_price is not None:

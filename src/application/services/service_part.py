@@ -3,12 +3,12 @@
 from uuid import UUID
 
 from src.application.schemas.part import CreatePart, UpdatePart
+from src.domain.enums import DronePurpose
 from src.domain.exceptions import Conflict409Error, NotFound404Error
 from src.infra.models import Part
-from src.infra.repositories.part import PartRepo
-from src.infra.repositories.drone import DroneRepo
 from src.infra.models.drone import Drone
-from src.domain.enums import DronePurpose
+from src.infra.repositories.drone import DroneRepo
+from src.infra.repositories.part import PartRepo
 
 
 class ServicePart:
@@ -27,12 +27,13 @@ class ServicePart:
     async def add_part(self, data: CreatePart) -> Part:
         """добавление запчасти, возвращает объект"""
         part = Part(**data.model_dump())
-        drone = await self.drone_repo.search_by_id(data.drone_id)
-        if not isinstance(drone, Drone):
-            raise NotFound404Error(code="DRONE_NOT_FOUND",
-                                   message=f"дрон с id ({data.drone_id}) не найден")
-        if part.purpose != drone.purpose:
-            raise Conflict409Error(code="PART_PURPOSE_MISMATCH", message='тип запчасти не совпадает с типом дрона')
+        if data.drone_id is not None:
+            drone = await self.get_part(data.drone_id)
+            if part.purpose != drone.purpose:
+                raise Conflict409Error(
+                    code="PART_PURPOSE_MISMATCH",
+                    message='тип запчасти не совпадает с типом дрона'
+                )
 
         return await self.repo.create_part(part)
 
@@ -45,7 +46,10 @@ class ServicePart:
         if "drone_id" in modification:
             drone_id = modification["drone_id"]
             if (part.drone_id is not None and drone_id is not None):
-                raise Conflict409Error(code="PART_ALREADY_ATTACHED", message="запчасть уже привязана к другому дрону.")
+                raise Conflict409Error(
+                    code="PART_ALREADY_ATTACHED",
+                    message="запчасть уже привязана к другому дрону."
+                )
 
         new_drone_id = modification.get("drone_id", part.drone_id)
         new_purpose = modification.get("purpose", part.purpose)
@@ -55,7 +59,10 @@ class ServicePart:
                 raise NotFound404Error(code="DRONE_NOT_FOUND",
                                        message=f"дрон с id ({data.drone_id}) не найден")
             if drone.purpose != new_purpose:
-                raise Conflict409Error(code="PART_PURPOSE_MISMATCH", message='тип запчасти не совпадает с типом дрона')
+                raise Conflict409Error(
+                    code="PART_PURPOSE_MISMATCH",
+                    message='тип запчасти не совпадает с типом дрона'
+                )
 
         for key, value in modification.items():
             setattr(part, key, value)
