@@ -22,7 +22,7 @@ class ReadPart(BaseOutput):
     name: str
     purpose: DronePurpose
     price: int
-    drone_id: UUID
+    drone_id: UUID | None
     model_config = ConfigDict(from_attributes=True)
 
 

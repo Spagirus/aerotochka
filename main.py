@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from src.api.customer_api import router as customer_router
 from src.api.drone import router as drone_router
 from src.api.license import router as license_router
+from src.api.part import router as part_router
 from src.domain.exceptions import Conflict409Error, NotFound404Error
 
 app = FastAPI(title="AэроТочка", description="Интернет-магазин дронов")
@@ -12,7 +13,7 @@ app = FastAPI(title="AэроТочка", description="Интернет-мага�
 app.include_router(customer_router)
 app.include_router(license_router)
 app.include_router(drone_router)
-
+app.include_router(part_router)
 
 @app.exception_handler(NotFound404Error)
 def error_404(request: Request, err: NotFound404Error):

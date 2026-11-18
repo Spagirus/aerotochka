@@ -1,29 +1,54 @@
-"""ÂÔÓÁËÚÓËÈ Á‡Ô˜‡ÒÚË (‡·ÓÚ‡ Ò ·‰)"""
+"""—Ä–µ–ø–æ–∑–∏—Ç–æ—Ä–∏–π –∑–∞–ø—á–∞—Å—Ç–∏ (—Ä–∞–±–æ—Ç–∞ —Å –±–¥)"""
 
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.infra.models.part import Part
-
+from src.domain.enums import DronePurpose
+from sqlalchemy import select, func
 
 class PartRepo:
     def __init__(self, session: AsyncSession):
         self.session = session
 
     async def search_by_id(self, part_id: UUID) -> Part | None:
-        """ÔÓËÒÍ Á‡Ô˜‡ÒÚË ÔÓ ‡È‰Ë"""
+        """–ø–æ–∏—Å–∫ –∑–∞–ø—á–∞—Å—Ç–∏ –ø–æ –∞–π–¥–∏"""
         return await self.session.get(Part, part_id)
 
     async def create_part(self, part) -> Part:
-        """ÒÓÁ‰‡ÌËÂ Á‡Ô˜‡ÒÚË"""
+        """—Å–æ–∑–¥–∞–Ω–∏–µ –∑–∞–ø—á–∞—Å—Ç–∏"""
         self.session.add(part)
         await self.session.commit()
         await self.session.refresh(part)
         return part
 
     async def update_part(self, part) -> Part:
-        """ËÁÏÂÌÂÌËÂ Á‡Ô˜‡ÒÚË"""
+        """–∏–∑–º–µ–Ω–µ–Ω–∏–µ –∑–∞–ø—á–∞—Å—Ç–∏"""
         await self.session.commit()
         await self.session.refresh(part)
         return part
+
+    async def delete_part(self, part) -> None:
+        """—É–¥–∞–ª–µ–Ω–∏–µ –∑–∞–ø—á–∞—Å—Ç–∏"""
+        await self.session.delete(part)
+        await self.session.commit()
+
+    async def get_parts(
+            self,
+            purpose: DronePurpose | None,
+            attached: bool | None,
+            limit: int,
+            offset: int
+    ):
+        """–ø–æ–ª—É—á–µ–Ω–∏–µ –≤—Å–µ—Ö –∑–∞–ø—á–∞—Å—Ç–µ–π"""
+        stmt = select(Part)
+        if purpose is not None:
+            stmt = stmt.where(Part.purpose == purpose)
+        if attached is True:
+            stmt = stmt.where(Part.drone_id is not None)
+        if attached is False:
+            stmt = stmt.where(Part.drone_id is None)
+        total = await self.session.scalar(select(func.count()).select_from(stmt.subquery())) or 0
+        stmt = stmt.order_by(Part.price.desc()).limit(limit).offset(offset)
+        return list((await self.session.scalars(stmt)).all()), total

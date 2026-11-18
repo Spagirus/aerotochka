@@ -12,7 +12,7 @@ from src.infra.db import Base
 class Part(Base):
     __tablename__ = "parts"
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     purpose: Mapped[DronePurpose] = mapped_column(nullable=False)
     price: Mapped[int] = mapped_column(nullable=False)

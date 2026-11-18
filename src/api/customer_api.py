@@ -1,5 +1,4 @@
 """ендпоинты покупателя"""
-from idlelib.query import Query
 from uuid import UUID
 
 from fastapi import APIRouter, Query
@@ -21,6 +20,7 @@ async def get_customer(customer_id: UUID, service: customer_dep) -> ReadCustomer
 @router.post("/", status_code=201)
 async def add_customer(data: CreateCustomer, service: customer_dep) -> ReadCustomer:
     return await service.add_customer(data)
+
 
 @router.patch("/{customer_id}")
 async def patch_customer(customer_id: UUID, service: customer_dep, data: UpdateCustomer) -> ReadCustomer:
