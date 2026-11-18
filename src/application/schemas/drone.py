@@ -59,3 +59,10 @@ class UpdateDrone(BaseInput):
 
 class PurchaseDrone(BaseInput):
     customer_id: UUID
+
+
+class PaginationDrone(BaseInput):
+    items: list[ReadDrone]
+    total: int
+    limit: int
+    offset: int

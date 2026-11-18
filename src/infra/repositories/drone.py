@@ -1,10 +1,11 @@
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.infra.models.drone import Drone
 from src.infra.models.part import Part
+from src.domain.enums import DronePurpose, DroneStatus, FlightRank
 
 
 class DroneRepo:
@@ -15,21 +16,59 @@ class DroneRepo:
         """поиск дрона по айди"""
         return await self.session.get(Drone, drone_id)
 
-    async def create_drone(self, drone) -> Drone :
+    async def create_drone(self, drone) -> Drone:
         """создание дрона"""
         self.session.add(drone)
         await self.session.commit()
         await self.session.refresh(drone)
         return drone
 
-    async def update_drone (self, drone) -> Drone:
+    async def update_drone(self, drone) -> Drone:
         """изменение дрона"""
         await self.session.commit()
         await self.session.refresh(drone)
         return drone
 
-    async def search_parts_drone(self, drone_id: UUID) -> list[Part | None] | None:
+    async def search_parts_drone(self, drone_id: UUID, limit: int, offset: int):
         """поиск всех запчастей дрона"""
         stmt = select(Part).where(Part.drone_id == drone_id)
-        result = await self.session.scalars(stmt)
-        return list(result.all())
+        total = await self.session.scalar(select(func.count()).select_from(stmt.subquery())) or 0
+        stmt = stmt.order_by(Part.price.desc()).limit(limit).offset(offset)
+        return list((await self.session.scalars(stmt)).all()), total
+
+    async def get_drones(
+            self,
+            limit: int,
+            offset: int,
+            purpose: DronePurpose | None,
+            rank: FlightRank | None,
+            max_rank: FlightRank | None,
+            status: DroneStatus | None,
+            manufacturer: str | None,
+            has_camera: bool | None,
+            min_price: int | None,
+            max_price: int | None,
+            customer_id: UUID | None
+            ):
+        stmt = select(Drone)
+        if purpose is not None:
+            stmt = stmt.where(Drone.purpose == purpose)
+        if rank is not None:
+            stmt = stmt.where(Drone.rank == rank)
+        if max_rank is not None:
+            stmt = stmt.where(Drone.rank <= max_rank.rank)
+        if status is not None:
+            stmt = stmt.where(Drone.status == status)
+        if manufacturer is not None:
+            stmt = stmt.where(Drone.manufacturer.lower().strip() == manufacturer.lower().strip())
+        if has_camera is not None:
+            stmt = stmt.where(Drone.has_camera == has_camera)
+        if min_price is not None:
+            stmt = stmt.where(Drone.price >= min_price)
+        if max_price is not None:
+            stmt = stmt.where(Drone.price <= max_price)
+        if customer_id is not None:
+            stmt = stmt.where(Drone.customer_id == customer_id)
+        total = await self.session.scalar(select(func.count()).select_from(stmt.subquery())) or 0
+        stmt = stmt.order_by(Drone.created_at.desc()).limit(limit).offset(offset)
+        return list((await self.session.scalars(stmt)).all()), total

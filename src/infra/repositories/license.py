@@ -70,3 +70,25 @@ class LicenseRepo:
                 .where(License.customer_id == customer_id)
                 .order_by(License.issued_at.desc()).limit(1))
         return await self.session.scalar(stmt)
+
+    async def get_licenses(
+            self,
+            customer_id: UUID | None,
+            status: LicenseStatus | None,
+            key: str | None,
+            limit: int,
+            offset: int,
+            ):
+        stmt = select(License)
+        if customer_id is not None:
+            stmt = stmt.where(License.customer_id == customer_id)
+        if status is not None:
+            stmt = stmt.where(License.status == status)
+        if key is not None:
+            stmt = stmt.where(License.key == key)
+
+        total = await self.session.scalar(select(func.count()).select_from(stmt.subquery())) or 0
+        stmt = stmt.order_by(License.issued_at.desc()).limit(limit).offset(offset)
+        return list((await self.session.scalars(stmt)).all()), total
+
+

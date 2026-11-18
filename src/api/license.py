@@ -1,11 +1,12 @@
 """ендпоинты лицензии"""
 from uuid import UUID
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 
+from src.domain.enums import LicenseStatus
 from src.api.dependens import license_dep
-from src.application.schemas.license import CreateLicense, ReadLicense, RevokeBody
-
+from src.application.schemas.license import CreateLicense, ReadLicense, RevokeBody, PaginationLicense
+from typing import Annotated
 router = APIRouter(
     tags=["Licenses"],
     prefix="/api/v1/licenses"
@@ -21,14 +22,39 @@ async def get_license(license_id: UUID, service: license_dep) -> ReadLicense:
 async def add_license(data: CreateLicense, service: license_dep) -> ReadLicense:
     return await service.create_license(data)
 
+
 @router.post("/{id}/suspend", status_code=200)
 async def suspend_license(license_id: UUID, service: license_dep) -> ReadLicense:
     return await service.suspend_license(license_id)
+
+
+@router.post("/{id}/renewal")
+async def renewal_license_for_one_year(service: license_dep, license_id: UUID) -> ReadLicense:
+    return await service.renewal_license(license_id)
+
 
 @router.post("/{id}/resume", status_code=200)
 async def resume_license(license_id: UUID, service: license_dep) -> ReadLicense:
     return await service.resume_license(license_id)
 
+
 @router.post("/{id}/revoke", status_code=200)
-async def revoke_license(license_id: UUID, service: license_dep, data:RevokeBody) -> ReadLicense:
+async def revoke_license(license_id: UUID, service: license_dep, data: RevokeBody) -> ReadLicense:
     return await service.revoke_license(license_id, data)
+
+
+@router.get("/")
+async def get_licenses(
+        service: license_dep,
+        status: LicenseStatus | None = None,
+        key: str | None = None,
+        customer_id: UUID | None = None,
+        limit: Annotated[int, Query(ge=1, le=100)] = 20,
+        offset: Annotated[int, Query(ge=0)] = 0,
+        ) -> PaginationLicense:
+    return await service.get_licenses(
+        status=status,
+        key=key,
+        customer_id=customer_id,
+        limit=limit,
+        offset=offset)

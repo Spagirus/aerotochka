@@ -20,6 +20,7 @@ def enable_sqlite_fk(dbapi_connection, connection_record):
 
 SessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
+
 async def get_session() -> AsyncIterator[AsyncSession]:
     async with SessionLocal() as session:
         yield session
@@ -31,6 +32,8 @@ NAMING_CONVENTION = {
     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
     "pk": "pk_%(table_name)s",
 }
+
+
 class Base(DeclarativeBase):
     metadata = MetaData(naming_convention=NAMING_CONVENTION)
 

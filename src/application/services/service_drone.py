@@ -1,9 +1,9 @@
 from uuid import UUID
 
 from sqlalchemy.exc import IntegrityError
-
-from src.application.schemas.drone import CreateDrone, PurchaseDrone, UpdateDrone
-from src.domain.enums import DroneStatus, LicenseStatus
+from fastapi import HTTPException
+from src.application.schemas.drone import CreateDrone, PurchaseDrone, UpdateDrone, FlightRank
+from src.domain.enums import DroneStatus, LicenseStatus, DronePurpose
 from src.domain.exceptions import Conflict409Error, NotFound404Error
 from src.infra.models import Drone
 from src.infra.models.customer import Customer
@@ -40,10 +40,8 @@ class ServiceDrone:
         return drone
 
     async def update_drone(self, data: UpdateDrone, drone_id: UUID) -> Drone:
-        drone = await self.repo.search_by_id(drone_id)
-        if not isinstance(drone, Drone):
-            raise NotFound404Error(code="DRONE_NOT_FOUND",
-                                   message=f"дрон с id ({drone_id}) не найден")
+        drone = await self.get_drone(drone_id)
+
         if drone.status == DroneStatus.SOLD:
             raise Conflict409Error(code="DRONE_SOLD", message="дрон уже продан")
 
@@ -70,10 +68,7 @@ class ServiceDrone:
         return drone
 
     async def purchase_drone(self, customer_id: PurchaseDrone, drone_id: UUID) -> Drone:
-        drone = await self.repo.search_by_id(drone_id)
-        if not isinstance(drone, Drone):
-            raise NotFound404Error(code="DRONE_NOT_FOUND",
-                                   message=f"дрон с id ({drone_id}) не найден")
+        drone = await self.get_drone(drone_id)
 
         customer = await self.customer_repo.search_by_id(customer_id.customer_id)
         if not isinstance(customer, Customer):
@@ -107,3 +102,38 @@ class ServiceDrone:
         drone.sold_license_id = last_license.id
 
         return await self.repo.update_drone(drone)
+
+    async def get_drones(
+            self,
+            limit: int,
+            offset: int,
+            purpose: DronePurpose | None,
+            rank: FlightRank | None,
+            max_rank: FlightRank | None,
+            status: DroneStatus | None,
+            manufacturer: str | None,
+            has_camera: bool | None,
+            min_price: int | None,
+            max_price: int | None,
+            customer_id: UUID | None
+            ):
+        if min_price is not None and max_price is not None and min_price > max_price:
+            raise HTTPException(status_code=422, detail="минимальная цена не может быть больше максимальной")
+        items, total = await self.repo.get_drones(
+            limit=limit,
+            offset=offset,
+            purpose=purpose,
+            rank=rank,
+            max_rank=max_rank,
+            status=status,
+            manufacturer=manufacturer,
+            has_camera=has_camera,
+            customer_id=customer_id,
+            min_price=min_price,
+            max_price=max_price)
+        return {"items": items, "total": total, "limit": limit, "offset": offset}
+
+    async def get_parts_drone(self, drone_id: UUID, limit: int, offset: int) -> dict:
+        items, total = await self.repo.search_parts_drone(limit=limit, offset=offset, drone_id=drone_id)
+        return {"items": items, "total": total, "limit": limit, "offset": offset}
+

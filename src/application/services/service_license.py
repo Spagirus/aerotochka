@@ -40,7 +40,7 @@ class ServiceLicense:
         customer = await self.customer_repo.search_by_id(data.customer_id)
         if not isinstance(customer, Customer):
             raise NotFound404Error(
-                code="LICENSE_NOT_FOUND", message=f"покупатель с id ({data.customer_id}) не найден"
+                code="CUSTOMER_NOT_FOUND", message=f"покупатель с id ({data.customer_id}) не найден"
             )
 
         if relativedelta(today, customer.birth_date).years < 18:
@@ -71,10 +71,8 @@ class ServiceLicense:
         """приостановка лицензии, проверка что лицензия активна"""
         today = get_msk_time()
         await self.repo.check_execute(today.date())
-        license = await self.repo.search_by_id(license_id)
-        if not isinstance(license, License):
-            raise NotFound404Error(
-                code="LICENSE_NOT_FOUND", message=f"лицензия с id ({license_id}) не найдена")
+        license = await self.get_license(license_id)
+
         if license.status != LicenseStatus.ACTIVE:
             raise Conflict409Error(code="INVALID_LICENSE_TRANSITION", message="лицензия не активна")
         license.status = LicenseStatus.SUSPENDED
@@ -87,30 +85,62 @@ class ServiceLicense:
         """
         today = get_msk_time()
         await self.repo.check_execute(today.date())
-        license = await self.repo.search_by_id(license_id)
-        if not isinstance(license, License):
-            raise NotFound404Error(
-                code="LICENSE_NOT_FOUND", message=f"лицензия с id ({license_id}) не найдена"
-            )
-        if license.status != LicenseStatus.SUSPENDED or license and license.valid_until < today.date():
+        license = await self.get_license(license_id)
+        if license.status != LicenseStatus.SUSPENDED or license.valid_until < today.date():
             raise Conflict409Error(code="INVALID_LICENSE_TRANSITION",
                                    message="лицензия не приостановлена или просрочена")
         license.status = LicenseStatus.ACTIVE
-        return await    self.repo.update_license(license)
+        return await self.repo.update_license(license)
 
     async def revoke_license(self, license_id: UUID, revoke: RevokeBody) -> License:
         """отзыв лицензии, принимает причину, проверка что лицензия уже не отозвана"""
         today = get_msk_time()
         await self.repo.check_execute(today.date())
-        license = await self.repo.search_by_id(license_id)
-        if not isinstance(license, License):
-            raise NotFound404Error(
-                code="LICENSE_NOT_FOUND", message=f"лицензия с id ({license_id}) не найдена"
-            )
+        license = await self.get_license(license_id)
         if license.status in (LicenseStatus.REVOKED, LicenseStatus.EXPIRED):
             raise Conflict409Error(code="INVALID_LICENSE_TRANSITION",
-                                   message= "лицензия уже отозвана или истекла")
+                                   message="лицензия уже отозвана или истекла")
         license.status = LicenseStatus.REVOKED
         license.revoke_reason = revoke.reason
 
         return await self.repo.update_license(license)
+
+    async def get_licenses(
+            self,
+            limit: int,
+            offset: int,
+            key: str | None,
+            customer_id: UUID | None,
+            status: LicenseStatus | None) -> dict:
+            items, total = await self.repo.get_licenses(
+                limit=limit,
+                offset=offset,
+                key=key,
+                customer_id=customer_id,
+                status=status
+                )
+            return {"items": items, "total": total, "limit": limit, "offset": offset}
+
+    async def renewal_license(self, license_id: UUID) -> License:
+        """
+        продение лицензии на 1 год, продлить можно только активную,
+        которой осталось 3 месяца до истечения,
+        чтобы нельзя было продлить разам на больше лет просто потыкав кнопку
+        """
+        today = get_msk_time().date()
+        await self.repo.check_execute(today)
+        license = await self.get_license(license_id)
+        if license.status != LicenseStatus.ACTIVE or license.valid_until < today:
+            raise Conflict409Error(code="INVALID_LICENSE_RENEWAL", message="лицензия должна быть активна для продления")
+
+        if license.valid_until > today + relativedelta(months=3):
+            raise Conflict409Error(
+                code="INVALID_LICENSE_RENEWAL",
+                message="лицензию можно продлить только раз в 9 месяцев"
+            )
+        license.valid_until += relativedelta(years=1)
+        return await self.repo.update_license(license)
+
+
+
+

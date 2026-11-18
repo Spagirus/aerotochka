@@ -1,4 +1,4 @@
-"""схемы для покупателя"""
+"""СЃС…РµРјС‹ РґР»СЏ РїРѕРєСѓРїР°С‚РµР»СЏ"""
 
 from uuid import UUID
 
@@ -9,7 +9,7 @@ from src.domain.enums import DronePurpose
 
 
 class CreatePart(BaseInput):
-    """схема для создания запчасти"""
+    """СЃС…РµРјР° РґР»СЏ СЃРѕР·РґР°РЅРёСЏ Р·Р°РїС‡Р°СЃС‚Рё"""
     name: str = Field(min_length=1, max_length=200)
     purpose: DronePurpose
     price: int = Field(gt=0)
@@ -17,7 +17,7 @@ class CreatePart(BaseInput):
 
 
 class ReadPart(BaseOutput):
-    """схема ответа запчасти"""
+    """СЃС…РµРјР° РѕС‚РІРµС‚Р° Р·Р°РїС‡Р°СЃС‚Рё"""
     id: UUID
     name: str
     purpose: DronePurpose
@@ -27,7 +27,7 @@ class ReadPart(BaseOutput):
 
 
 class UpdatePart(BaseInput):
-    """схема изменения запчасти, все поля не обязательные"""
+    """СЃС…РµРјР° РёР·РјРµРЅРµРЅРёСЏ Р·Р°РїС‡Р°СЃС‚Рё, РІСЃРµ РїРѕР»СЏ РЅРµ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ"""
     name: str | None = Field(min_length=1, max_length=200, default=None)
     purpose: DronePurpose | None = None
     price: int | None = Field(gt=0, default=None)
@@ -38,5 +38,12 @@ class UpdatePart(BaseInput):
     def check_null(cls, value):
         if value is not None:
             return value
-        return ValueError("значение не может быть null")
+        return ValueError("Р·РЅР°С‡РµРЅРёРµ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ null")
+
+
+class PaginationPart(BaseInput):
+    items: list[ReadPart]
+    total: int
+    limit: int
+    offset: int
 

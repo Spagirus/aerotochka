@@ -41,10 +41,8 @@ class ServiceCustomer:
 
     async def update_customer(self, customer_id: UUID, data: UpdateCustomer) -> Customer:
         """изменение покупателя, проверка на совершеннолетие"""
-        customer = await self.repo.search_by_id(customer_id)
-        if not isinstance(customer, Customer):
-            raise NotFound404Error(code="CUSTOMER_NOT_FOUND",
-                                   message=f"покупатель с id ({customer_id}) не найден") from None
+        customer = await self.get_customer(customer_id)
+
         modification = data.model_dump(exclude_unset=True, exclude_none=True)
 
         if "birth_date" in modification:
@@ -70,6 +68,7 @@ class ServiceCustomer:
             ) from None
         customer.rank = None
         return customer
+
     async def pagination_customer(self, limit: int, offset: int, phone: str | None) -> dict:
         items, total = await self.repo.get_customers(limit=limit, offset=offset, phone=phone)
         today = get_msk_time().date()

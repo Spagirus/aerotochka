@@ -40,21 +40,29 @@ class ServicePart:
 
     async def update_part(self, part_id: UUID, data: UpdatePart) -> Part:
         """изменение запчасти"""
-        part = await self.repo.search_by_id(part_id)
-        if not isinstance(part, Part):
-            raise NotFound404Error(code="PART_NOT_FOUND",
-                                   message=f"запчасть с id ({part_id}) не найдена") from None
+        part = await self.get_part(part_id)
 
         modification = data.model_dump(exclude_unset=True)
+
         if "drone_id" in modification:
             new_drone_id = modification["drone_id"]
             if (part.drone_id is not None and new_drone_id is not None):
                 raise Conflict409Error(code="PART_ALREADY_ATTACHED", message="запчасть уже привязана к другому дрону.")
 
+        new_drone_id = modification.get("drone_id", part.drone_id)
+        new_purpose = modification.get("purpose", part.purpose)
+        if new_drone_id:
+            drone = await self.drone_repo.search_by_id(new_drone_id)
+            if not isinstance(drone, Drone):
+                raise NotFound404Error(code="DRONE_NOT_FOUND",
+                                       message=f"дрон с id ({data.drone_id}) не найден")
+            if drone.purpose != new_purpose:
+                raise Conflict409Error(code="PART_PURPOSE_MISMATCH", message='тип запчасти не совпадает с типом дрона')
 
+        for key, value in modification.items():
+            setattr(part, key, value)
 
-        # for key, value in modification.items():
-        #     setattr(part, key, value)
+        return await self.repo.update_part(part)
         #
         # try:
         #     await self.repo.update_part(part)
