@@ -44,7 +44,7 @@ async def resume_license(license_id: UUID, service: license_dep) -> ReadLicense:
     return await service.resume_license(license_id)
 
 
-@router.post("/{id}/revoke", status_code=200)
+@router.post("/{license_id}/revoke", status_code=200)
 async def revoke_license(license_id: UUID, service: license_dep, data: RevokeBody) -> ReadLicense:
     """ручка отзыва лицензии"""
     return await service.revoke_license(license_id, data)

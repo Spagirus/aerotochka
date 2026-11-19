@@ -45,11 +45,11 @@ class LicenseRepo:
         res = await self.session.scalars(stmt)
         return list(res.all())
 
-    async def get_active_customer_id(self, customer_id: UUID, date: datetime) -> License:
+    async def get_active_customer_id(self, customer_id: UUID, date: date) -> License | None:
         """ищет действующую лицензию покупателя по его айди"""
         stmt = select(License).where(License.customer_id == customer_id,
                                      License.status == LicenseStatus.ACTIVE,
-                                     License.valid_until > date)
+                                     License.valid_until >= date)
         return await self.session.scalar(stmt)
 
     async def update_license(self, license) -> License:

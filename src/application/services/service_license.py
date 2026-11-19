@@ -24,7 +24,7 @@ class ServiceLicense:
         license = await self.repo.search_by_id(license_id)
         if not isinstance(license, License):
             raise NotFound404Error(code="LICENSE_NOT_FOUND",
-                                   message=f"лицензия с id ({license}) не найдена")
+                                   message=f"лицензия с id ({license_id}) не найдена")
         return license
 
     async def create_license(self, data: CreateLicense) -> License:
@@ -54,7 +54,7 @@ class ServiceLicense:
                                    message="за сегодняшний день (по Москве)"
                                            " уже выдано 3 лицензии")
 
-        active = await self.repo.get_active_customer_id(data.customer_id, now)
+        active = await self.repo.get_active_customer_id(data.customer_id, today)
         if active:
             if active.rank.rank >= data.rank.rank:
                 raise Conflict409Error(
@@ -113,6 +113,7 @@ class ServiceLicense:
             status: LicenseStatus | None
     ) -> dict:
         """пагинация лицензии"""
+        await self.repo.check_execute(get_msk_time().date())
         items, total = await self.repo.get_licenses(
             limit=limit,
             offset=offset,

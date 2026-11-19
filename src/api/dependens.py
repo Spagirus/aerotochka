@@ -18,7 +18,7 @@ SessionDep = Annotated[AsyncSession, Depends(get_session)]
 
 
 def get_customer_service(session: SessionDep) -> ServiceCustomer:
-    return ServiceCustomer(CustomerRepo(session))
+    return ServiceCustomer(CustomerRepo(session), LicenseRepo(session))
 
 
 def get_license_service(session: SessionDep) -> ServiceLicense:

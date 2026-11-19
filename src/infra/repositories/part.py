@@ -47,7 +47,7 @@ class PartRepo:
         if purpose is not None:
             stmt = stmt.where(Part.purpose == purpose)
         if attached is True:
-            stmt = stmt.where(Part.drone_id.is_not_(None))
+            stmt = stmt.where(Part.drone_id.is_not(None))
         if attached is False:
             stmt = stmt.where(Part.drone_id.is_(None))
         total = await self.session.scalar(select(func.count()).select_from(stmt.subquery())) or 0

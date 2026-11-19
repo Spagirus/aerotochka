@@ -28,7 +28,12 @@ class ServicePart:
         """добавление запчасти, возвращает объект"""
         part = Part(**data.model_dump())
         if data.drone_id is not None:
-            drone = await self.get_part(data.drone_id)
+            drone = await self.drone_repo.search_by_id(data.drone_id)
+            if not isinstance(drone, Drone):
+                raise NotFound404Error(
+                    code="DRONE_NOT_FOUND",
+                    message=f"дрон с id ({data.drone_id}) не найден",
+                )
             if part.purpose != drone.purpose:
                 raise Conflict409Error(
                     code="PART_PURPOSE_MISMATCH",

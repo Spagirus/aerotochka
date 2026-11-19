@@ -31,7 +31,7 @@ async def patch_customer(customer_id: UUID, service: customer_dep, data: UpdateC
     """ручка изменения покупателя"""
     return await service.update_customer(customer_id=customer_id, data=data)
 
-@router.get("/")
+@router.get("")
 async def get_customers(
         service: customer_dep,
         phone: str | None = None,

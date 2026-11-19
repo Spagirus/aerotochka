@@ -10,11 +10,13 @@ from src.domain.exceptions import Conflict409Error, NotFound404Error
 from src.infra.models import Customer
 from src.infra.models.utils import get_msk_time
 from src.infra.repositories.customer import CustomerRepo
+from src.infra.repositories.license import LicenseRepo
 
 
 class ServiceCustomer:
-    def __init__(self, repo: CustomerRepo):
+    def __init__(self, repo: CustomerRepo, license_repo: LicenseRepo):
         self.repo = repo
+        self.license_repo = license_repo
 
     async def get_customer(self, customer_id: UUID) -> Customer:
         """поиск покупателя по айди"""
@@ -49,7 +51,7 @@ class ServiceCustomer:
             birth_date = modification["birth_date"]
             all_issued = await self.repo.search_licenses_customer(customer_id)
             for issue in all_issued:
-                difference = relativedelta(issue.issued_at, birth_date)
+                difference = relativedelta(issue.issued_at.date(), birth_date)
                 if difference.years < 18:
                     raise Conflict409Error(code="CUSTOMER_UNDERAGE",
                                            message="Вам должно быть 18"
@@ -66,7 +68,8 @@ class ServiceCustomer:
                 code="PHONE_ALREADY_EXISTS",
                 message=f"Покупатель с телефоном {customer.phone} уже есть",
             ) from None
-        customer.rank = None
+        today = get_msk_time().date()
+        customer.rank = await self.repo.get_rank_customer(customer_id, today)
         return customer
 
     async def pagination_customer(self, limit: int, offset: int, phone: str | None) -> dict:
@@ -80,6 +83,8 @@ class ServiceCustomer:
 
     async def get_licenses_customer(self, customer_id: UUID, limit: int, offset: int) -> dict:
         """пагинация получения всех лицензий покупателя"""
+        await self.get_customer(customer_id)
+        await self.license_repo.check_execute(get_msk_time().date())
         items, total = await self.repo.get_licenses_pagination(
             limit=limit,
             offset=offset,

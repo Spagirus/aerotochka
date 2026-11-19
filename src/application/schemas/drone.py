@@ -4,9 +4,8 @@ from uuid import UUID
 
 from pydantic import Field
 
+from src.application.schemas.base_schemas import BaseInput, BaseOutput
 from src.domain.enums import DronePurpose, DroneStatus, FlightRank
-
-from base_schemas import BaseInput, BaseOutput
 
 
 class CreateDrone(BaseInput):

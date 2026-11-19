@@ -13,7 +13,7 @@ class CreatePart(BaseInput):
     name: str = Field(min_length=1, max_length=200)
     purpose: DronePurpose
     price: int = Field(gt=0)
-    drone_id: UUID | None
+    drone_id: UUID | None = None
 
 
 class ReadPart(BaseOutput):
@@ -39,7 +39,7 @@ class UpdatePart(BaseInput):
         """проверка на ввод null, т.к надо чтобы можно было в айди дрона ввести null"""
         if value is not None:
             return value
-        return ValueError("значение не может быть null")
+        raise ValueError("значение не может быть null")
 
 
 class PaginationPart(BaseInput):

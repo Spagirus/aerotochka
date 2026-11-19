@@ -3,9 +3,10 @@
 from datetime import date, datetime
 from uuid import UUID
 
-from src.domain.enums import FlightRank, LicenseStatus
+from pydantic import Field
 
-from base_schemas import BaseInput, BaseOutput
+from src.application.schemas.base_schemas import BaseInput, BaseOutput
+from src.domain.enums import FlightRank, LicenseStatus
 
 
 class CreateLicense(BaseInput):
@@ -28,7 +29,7 @@ class ReadLicense(BaseOutput):
 
 class RevokeBody(BaseInput):
     """схема тела причины отзыва лицензии"""
-    reason: str
+    reason: str = Field(min_length=1)
 
 
 class PaginationLicense(BaseInput):

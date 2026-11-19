@@ -53,6 +53,10 @@ class ServiceDrone:
                 code="INVALID_DRONE_STATUS",
                 message="нельзя перевести в sold - продажа идёт только через покупку"
             )
+        if "purpose" in modification and modification["purpose"] != drone.purpose:
+            parts = await self.repo.get_parts_drone(drone_id)
+            for part in parts:
+                part.drone_id = None
 
         for key, value in modification.items():
             setattr(drone, key, value)
@@ -76,11 +80,14 @@ class ServiceDrone:
         customer = await self.customer_repo.search_by_id(customer_id.customer_id)
         if not isinstance(customer, Customer):
             raise NotFound404Error(code="CUSTOMER_NOT_FOUND",
-                                   message=f"покупатель с {customer_id} не найден")
+                                   message=f"покупатель с  id ({customer_id.customer_id}) не найден")
 
         if drone.status != DroneStatus.IN_STOCK:
             raise Conflict409Error(code="DRONE_NOT_AVAILABLE",
                                    message="дрон уже куплен или снят с продажи")
+        now = get_msk_time()
+        today = now.date()
+        await self.license_repo.check_execute(today)
 
         last_license = await self.license_repo.get_last_license_customer(customer_id.customer_id)
         if last_license is None or last_license.status == LicenseStatus.REVOKED:
@@ -88,9 +95,6 @@ class ServiceDrone:
                 code="NO_LICENSE",
                 message="У покупателя нет лицензии или последняя отозвана"
             )
-        now = get_msk_time()
-        today = now.date()
-        await self.license_repo.check_execute(today)
         if last_license.status == LicenseStatus.SUSPENDED:
             raise Conflict409Error(code="LICENSE_SUSPENDED", message="последняя лицензия приостановлена")
         if last_license.status == LicenseStatus.EXPIRED:
@@ -141,5 +145,6 @@ class ServiceDrone:
         return {"items": items, "total": total, "limit": limit, "offset": offset}
 
     async def get_parts_drone(self, drone_id: UUID, limit: int, offset: int) -> dict:
+        await self.get_drone(drone_id)
         items, total = await self.repo.search_parts_drone(limit=limit, offset=offset, drone_id=drone_id)
         return {"items": items, "total": total, "limit": limit, "offset": offset}

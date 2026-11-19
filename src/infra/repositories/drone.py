@@ -36,6 +36,11 @@ class DroneRepo:
         stmt = stmt.order_by(Part.price.desc()).limit(limit).offset(offset)
         return list((await self.session.scalars(stmt)).all()), total
 
+    async def get_parts_drone(self, drone_id: UUID) -> list[Part]:
+        """все запчасти дрона списком(не пагинацией!!)"""
+        stmt = select(Part).where(Part.drone_id == drone_id)
+        return list((await self.session.scalars(stmt)).all())
+
     async def get_drones(
             self,
             limit: int,
