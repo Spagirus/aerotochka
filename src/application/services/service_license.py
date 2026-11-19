@@ -66,8 +66,7 @@ class ServiceLicense:
             active.revoke_reason = "заменена новой лицензией"
         return await self.repo.create_license(License(**data.model_dump()))
 
-
-    async def suspend_license(self,license_id: UUID) -> License:
+    async def suspend_license(self, license_id: UUID) -> License:
         """приостановка лицензии, проверка что лицензия активна"""
         today = get_msk_time()
         await self.repo.check_execute(today.date())
@@ -111,15 +110,17 @@ class ServiceLicense:
             offset: int,
             key: str | None,
             customer_id: UUID | None,
-            status: LicenseStatus | None) -> dict:
-            items, total = await self.repo.get_licenses(
-                limit=limit,
-                offset=offset,
-                key=key,
-                customer_id=customer_id,
-                status=status
-                )
-            return {"items": items, "total": total, "limit": limit, "offset": offset}
+            status: LicenseStatus | None
+    ) -> dict:
+        """пагинация лицензии"""
+        items, total = await self.repo.get_licenses(
+            limit=limit,
+            offset=offset,
+            key=key,
+            customer_id=customer_id,
+            status=status
+        )
+        return {"items": items, "total": total, "limit": limit, "offset": offset}
 
     async def renewal_license(self, license_id: UUID) -> License:
         """
@@ -143,7 +144,3 @@ class ServiceLicense:
             )
         license.valid_until += relativedelta(years=1)
         return await self.repo.update_license(license)
-
-
-
-

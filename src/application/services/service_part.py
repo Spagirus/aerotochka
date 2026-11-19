@@ -45,7 +45,7 @@ class ServicePart:
 
         if "drone_id" in modification:
             drone_id = modification["drone_id"]
-            if (part.drone_id is not None and drone_id is not None):
+            if part.drone_id is not None and drone_id is not None:
                 raise Conflict409Error(
                     code="PART_ALREADY_ATTACHED",
                     message="запчасть уже привязана к другому дрону."
@@ -70,6 +70,7 @@ class ServicePart:
         return await self.repo.update_part(part)
 
     async def delete_part(self, part_id: UUID) -> None:
+        """удаление запчасти"""
         part = await self.get_part(part_id)
         await self.repo.delete_part(part)
 
@@ -80,6 +81,7 @@ class ServicePart:
             limit: int,
             offset: int
             ):
+        """пагинация запчастей"""
         items, total = await self.repo.get_parts(
             purpose=purpose,
             attached=attached,
@@ -87,4 +89,3 @@ class ServicePart:
             offset=offset
         )
         return {"items": items, "total": total, "limit": limit, "offset": offset}
-

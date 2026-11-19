@@ -17,21 +17,25 @@ router = APIRouter(
 
 @router.get("/{drone_id}")
 async def get_drone(drone_id: UUID, service: drone_dep) -> ReadDrone:
+    """ручка получения дрона по id"""
     return await service.get_drone(drone_id=drone_id)
 
 
 @router.post("", status_code=201)
 async def add_drone(data: CreateDrone, service: drone_dep) -> ReadDrone:
+    """ручка создания дрона"""
     return await service.add_drone(data)
 
 
 @router.patch("/{drone_id}")
 async def patch_drone(drone_id: UUID, service: drone_dep, data: UpdateDrone) -> ReadDrone:
+    """ручка изменения дрона"""
     return await service.update_drone(drone_id=drone_id, data=data)
 
 
 @router.post("/{drone_id}/purchase")
 async def purchase_drone(drone_id: UUID, service: drone_dep, data: PurchaseDrone) -> ReadDrone:
+    """ручка покупки дрона"""
     return await service.purchase_drone(customer_id=data, drone_id=drone_id)
 
 
@@ -50,6 +54,7 @@ async def get_drones(
         max_price: Annotated[int | None, Query(ge=1)] = None,
         customer_id: UUID | None = None,
 ) -> PaginationDrone:
+    """ручка получения списка дронов в формате пагинации с фильтрами"""
 
     return await service.get_drones(
             limit=limit,
@@ -65,6 +70,7 @@ async def get_drones(
             max_price=max_price
     )
 
+
 @router.get("/{drone_id}/parts")
 async def get_parts_drone(
         service: drone_dep,
@@ -72,4 +78,5 @@ async def get_parts_drone(
         limit: Annotated[int, Query(ge=1, le=100)] = 20,
         offset: Annotated[int, Query(ge=0)] = 0,
         ) -> PaginationPart:
+    """ручка получения всех запчастей дрона в формате пагинации"""
     return await service.get_parts_drone(drone_id=drone_id, limit=limit, offset=offset)

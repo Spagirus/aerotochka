@@ -1,4 +1,4 @@
-"""ендпоинты покупателя"""
+"""ендпоинты запчастей"""
 from typing import Annotated
 from uuid import UUID
 
@@ -16,16 +16,19 @@ router = APIRouter(
 
 @router.get("/{part_id}")
 async def get_part(part_id: UUID, service: part_dep) -> ReadPart:
+    """ручка получения запчасти по id"""
     return await service.get_part(part_id=part_id)
 
 
 @router.post("", status_code=201)
 async def add_part(data: CreatePart, service: part_dep) -> ReadPart:
+    """ручка создания запчасти"""
     return await service.add_part(data)
 
 
 @router.patch("/{part_id}")
 async def patch_part(part_id: UUID, service: part_dep, data: UpdatePart) -> ReadPart:
+    """ручка изменения запчасти"""
     return await service.update_part(part_id=part_id, data=data)
 
 
@@ -37,8 +40,11 @@ async def get_parts(
         limit: Annotated[int, Query(ge=1, le=100)] = 20,
         offset: Annotated[int, Query(ge=0)] = 0,
         ) -> PaginationPart:
+    """ручка получения списка запчастей в формате пагинации с фильтрами"""
     return await service.get_parts(purpose=purpose, attached=attached, limit=limit, offset=offset)
 
-@router.delete("/{part_id}", status_code = 204)
+
+@router.delete("/{part_id}", status_code=204)
 async def delete_part(part_id: UUID, service: part_dep) -> None:
+    """ручка удаления запчасти"""
     return await service.delete_part(part_id=part_id)

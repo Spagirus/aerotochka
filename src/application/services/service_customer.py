@@ -70,6 +70,7 @@ class ServiceCustomer:
         return customer
 
     async def pagination_customer(self, limit: int, offset: int, phone: str | None) -> dict:
+        """пагинация покупателя с выдачей каждому ранга по его лицензии"""
         items, total = await self.repo.get_customers(limit=limit, offset=offset, phone=phone)
         today = get_msk_time().date()
         for customer in items:
@@ -77,4 +78,11 @@ class ServiceCustomer:
 
         return {"items": items, "total": total, "limit": limit, "offset": offset}
 
-
+    async def get_licenses_customer(self, customer_id: UUID, limit: int, offset: int) -> dict:
+        """пагинация получения всех лицензий покупателя"""
+        items, total = await self.repo.get_licenses_pagination(
+            limit=limit,
+            offset=offset,
+            customer_id=customer_id
+        )
+        return {"items": items, "total": total, "limit": limit, "offset": offset}

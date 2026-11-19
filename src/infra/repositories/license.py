@@ -28,7 +28,7 @@ class LicenseRepo:
         await self.session.execute(stmt)
         await self.session.commit()
 
-    async def search_by_id(self,license_id: UUID) -> License | None:
+    async def search_by_id(self, license_id: UUID) -> License | None:
         """поиск по айди лицензии"""
         return await self.session.get(License, license_id)
 
@@ -61,11 +61,12 @@ class LicenseRepo:
     async def check_limit(self, start_day: datetime, end_day: datetime) -> int:
         """проверка лимита 3 в день"""
         stmt = select(func.count(License.id)).where(License.issued_at >= start_day,
-                                     License.issued_at < end_day)
+                                                    License.issued_at < end_day)
         res = await self.session.scalar(stmt)
         return res or 0
 
     async def get_last_license_customer(self, customer_id: UUID) -> License | None:
+        """получение последней лицензии покупателя"""
         stmt = (select(License)
                 .where(License.customer_id == customer_id)
                 .order_by(License.issued_at.desc()).limit(1))
@@ -78,7 +79,7 @@ class LicenseRepo:
             key: str | None,
             limit: int,
             offset: int,
-            ):
+    ):
         stmt = select(License)
         if customer_id is not None:
             stmt = stmt.where(License.customer_id == customer_id)
@@ -90,5 +91,3 @@ class LicenseRepo:
         total = await self.session.scalar(select(func.count()).select_from(stmt.subquery())) or 0
         stmt = stmt.order_by(License.issued_at.desc()).limit(limit).offset(offset)
         return list((await self.session.scalars(stmt)).all()), total
-
-

@@ -36,14 +36,15 @@ class UpdatePart(BaseInput):
     @field_validator("name", "purpose", "price")
     @classmethod
     def check_null(cls, value):
+        """проверка на ввод null, т.к надо чтобы можно было в айди дрона ввести null"""
         if value is not None:
             return value
         return ValueError("значение не может быть null")
 
 
 class PaginationPart(BaseInput):
+    """схема пагинации лицензии"""
     items: list[ReadPart]
     total: int
     limit: int
     offset: int
-

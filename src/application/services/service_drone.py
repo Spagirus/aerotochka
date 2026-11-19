@@ -41,6 +41,7 @@ class ServiceDrone:
         return drone
 
     async def update_drone(self, data: UpdateDrone, drone_id: UUID) -> Drone:
+        """изменение дрона"""
         drone = await self.get_drone(drone_id)
 
         if drone.status == DroneStatus.SOLD:
@@ -69,6 +70,7 @@ class ServiceDrone:
         return drone
 
     async def purchase_drone(self, customer_id: PurchaseDrone, drone_id: UUID) -> Drone:
+        """покупка дрона"""
         drone = await self.get_drone(drone_id)
 
         customer = await self.customer_repo.search_by_id(customer_id.customer_id)
@@ -120,7 +122,8 @@ class ServiceDrone:
             min_price: int | None,
             max_price: int | None,
             customer_id: UUID | None
-            ):
+            ) -> dict:
+        """пагинация дрона"""
         if min_price is not None and max_price is not None and min_price > max_price:
             raise HTTPException(status_code=422, detail="минимальная цена не может быть больше максимальной")
         items, total = await self.repo.get_drones(
@@ -140,4 +143,3 @@ class ServiceDrone:
     async def get_parts_drone(self, drone_id: UUID, limit: int, offset: int) -> dict:
         items, total = await self.repo.search_parts_drone(limit=limit, offset=offset, drone_id=drone_id)
         return {"items": items, "total": total, "limit": limit, "offset": offset}
-

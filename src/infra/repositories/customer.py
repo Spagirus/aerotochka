@@ -39,16 +39,25 @@ class CustomerRepo:
         return list(result.all())
 
     async def get_rank_customer(self, customer_id: UUID, today: date) -> FlightRank | None:
+        """вычисление ранга покупателя по его лицензии"""
         stmt = (select(License.rank).where(License.customer_id == customer_id,
-                                     License.status == LicenseStatus.ACTIVE,
-                                     License.valid_until >= today,
-                                     ).order_by(License.issued_at.desc()).limit(1))
+                                           License.status == LicenseStatus.ACTIVE,
+                                           License.valid_until >= today,
+                                           ).order_by(License.issued_at.desc()).limit(1))
         return await self.session.scalar(stmt)
 
     async def get_customers(self, phone: str | None, limit: int, offset: int):
+        """ получение списка покупателей пагинацией"""
         stmt = select(Customer)
         if phone is not None:
             stmt = stmt.where(Customer.phone == phone)
         total = await self.session.scalar(select(func.count()).select_from(stmt.subquery()))
         stmt = stmt.order_by(Customer.created_at.desc()).limit(limit).offset(offset)
+        return list((await self.session.scalars(stmt)).all()), total
+
+    async def get_licenses_pagination(self, customer_id: UUID, limit: int, offset: int):
+        """получение списка лицензий покупателя пагинацией """
+        stmt = select(License).where(License.customer_id == customer_id)
+        total = await self.session.scalar(select(func.count()).select_from(stmt.subquery()))
+        stmt = stmt.order_by(License.issued_at.desc()).limit(limit).offset(offset)
         return list((await self.session.scalars(stmt)).all()), total

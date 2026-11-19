@@ -50,6 +50,7 @@ class DroneRepo:
             max_price: int | None,
             customer_id: UUID | None
             ):
+        """получение спика дронов пагинацией с кучей фильтров"""
         stmt = select(Drone)
         if purpose is not None:
             stmt = stmt.where(Drone.purpose == purpose)

@@ -6,10 +6,11 @@ from pydantic import Field
 
 from src.domain.enums import DronePurpose, DroneStatus, FlightRank
 
-from .base_schemas import BaseInput, BaseOutput
+from base_schemas import BaseInput, BaseOutput
 
 
 class CreateDrone(BaseInput):
+    """схема создания дрона"""
     sku: str = Field(min_length=1)
     name: str = Field(min_length=1, max_length=200)
     manufacturer: str = Field(min_length=1, max_length=100)
@@ -23,6 +24,7 @@ class CreateDrone(BaseInput):
 
 
 class ReadDrone(BaseOutput):
+    """схема ответа дрона"""
     id: UUID
     sku: str
     name: str
@@ -44,6 +46,7 @@ class ReadDrone(BaseOutput):
 
 
 class UpdateDrone(BaseInput):
+    """схема изменения дрона, все поля не обязательные"""
     sku: str | None = Field(min_length=1, default=None)
     name: str | None = Field(min_length=1, max_length=200, default=None)
     manufacturer: str | None = Field(min_length=1, max_length=100, default=None)
@@ -58,10 +61,12 @@ class UpdateDrone(BaseInput):
 
 
 class PurchaseDrone(BaseInput):
+    """схема для покупки дрона, принимает JSON с id покупателя"""
     customer_id: UUID
 
 
 class PaginationDrone(BaseInput):
+    """схема пагинации дрона"""
     items: list[ReadDrone]
     total: int
     limit: int

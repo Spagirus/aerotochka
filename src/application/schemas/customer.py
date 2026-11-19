@@ -52,7 +52,9 @@ class UpdateCustomer(BaseInput):
             raise ValueError("введённая дата находится в будущем")
         return b_date
 
+
 class PaginationCustomer(BaseInput):
+    """схема пагинации"""
     items: list[ReadCustomer]
     total: int
     limit: int

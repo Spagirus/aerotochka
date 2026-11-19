@@ -5,7 +5,7 @@ from uuid import UUID
 
 from src.domain.enums import FlightRank, LicenseStatus
 
-from .base_schemas import BaseInput, BaseOutput
+from base_schemas import BaseInput, BaseOutput
 
 
 class CreateLicense(BaseInput):
@@ -32,6 +32,7 @@ class RevokeBody(BaseInput):
 
 
 class PaginationLicense(BaseInput):
+    """схема пагинации лицензии"""
     items: list[ReadLicense]
     total: int
     limit: int

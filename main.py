@@ -1,3 +1,4 @@
+""" главный файл запуска приложения запуск через run, либо через команду uvicorn src.main:app"""
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse

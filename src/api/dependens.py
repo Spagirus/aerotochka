@@ -22,7 +22,7 @@ def get_customer_service(session: SessionDep) -> ServiceCustomer:
 
 
 def get_license_service(session: SessionDep) -> ServiceLicense:
-    return ServiceLicense(LicenseRepo(session),CustomerRepo(session))
+    return ServiceLicense(LicenseRepo(session), CustomerRepo(session))
 
 
 def get_drone_service(session: SessionDep) -> ServiceDrone:
@@ -41,4 +41,3 @@ customer_dep = Annotated[ServiceCustomer, Depends(get_customer_service)]
 license_dep = Annotated[ServiceLicense, Depends(get_license_service)]
 drone_dep = Annotated[ServiceDrone, Depends(get_drone_service)]
 part_dep = Annotated[ServicePart, Depends(get_part_service)]
-
