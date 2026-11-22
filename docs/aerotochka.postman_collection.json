@@ -1,0 +1,1063 @@
+{
+  "info": {
+    "_postman_id": "2439c596-1e2d-4b02-b11c-1d51197a362b",
+    "name": "АэроТочка",
+    "description": "Интернет-магазин дронов",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "60320953",
+    "_collection_link": "https://go.postman.co/collection/60320953-2439c596-1e2d-4b02-b11c-1d51197a362b?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "api",
+      "item": [
+        {
+          "name": "v1",
+          "item": [
+            {
+              "name": "customers",
+              "item": [
+                {
+                  "name": "{customer_id}",
+                  "item": [
+                    {
+                      "name": "licenses",
+                      "item": [
+                        {
+                          "name": "Get Licenses Customer",
+                          "request": {
+                            "method": "GET",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              }
+                            ],
+                            "url": {
+                              "raw": "{{baseUrl}}/api/v1/customers/:customer_id/licenses?limit=20&offset=0",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "api",
+                                "v1",
+                                "customers",
+                                ":customer_id",
+                                "licenses"
+                              ],
+                              "query": [
+                                {
+                                  "key": "limit",
+                                  "value": "20"
+                                },
+                                {
+                                  "key": "offset",
+                                  "value": "0"
+                                }
+                              ],
+                              "variable": [
+                                {
+                                  "key": "customer_id",
+                                  "value": "{{customer_id}}"
+                                }
+                              ]
+                            },
+                            "description": "Ручка получения всех лицензий покупателя в формате пагинации"
+                          },
+                          "response": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Get Customer",
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/customers/:customer_id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "customers",
+                            ":customer_id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "customer_id",
+                              "value": "{{customer_id}}"
+                            }
+                          ]
+                        },
+                        "description": "Ручка получения покупателя по id"
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Patch Customer",
+                      "request": {
+                        "method": "PATCH",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"full_name\": \"Иванов Иван Петрович\",\n  \"email\": \"ivanov.new@example.com\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/customers/:customer_id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "customers",
+                            ":customer_id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "customer_id",
+                              "value": "{{customer_id}}"
+                            }
+                          ]
+                        },
+                        "description": "Ручка изменения покупателя"
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Add Customer",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"full_name\": \"Иванов Иван Иванович\",\n  \"phone\": \"+79991234567\",\n  \"birth_date\": \"1998-05-15\",\n  \"email\": \"ivanov@example.com\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/customers",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "customers"
+                      ]
+                    },
+                    "description": "Ручка добавления покупателя"
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get Customers",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/customers?limit=20&offset=0",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "customers"
+                      ],
+                      "query": [
+                        {
+                          "key": "limit",
+                          "value": "20"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0"
+                        },
+                        {
+                          "key": "phone",
+                          "value": "+79991234567",
+                          "disabled": true
+                        }
+                      ]
+                    },
+                    "description": "Ручка получения всех покупателей в формате пагинации с фильтром по телефону"
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "licenses",
+              "item": [
+                {
+                  "name": "{license_id}",
+                  "item": [
+                    {
+                      "name": "suspend",
+                      "item": [
+                        {
+                          "name": "Suspend License",
+                          "request": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              }
+                            ],
+                            "url": {
+                              "raw": "{{baseUrl}}/api/v1/licenses/:license_id/suspend",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "api",
+                                "v1",
+                                "licenses",
+                                ":license_id",
+                                "suspend"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "license_id",
+                                  "value": "{{license_id}}"
+                                }
+                              ]
+                            },
+                            "description": "Ручка приостановки лицензии"
+                          },
+                          "response": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "renewal",
+                      "item": [
+                        {
+                          "name": "Renewal License For One Year",
+                          "request": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              }
+                            ],
+                            "url": {
+                              "raw": "{{baseUrl}}/api/v1/licenses/:license_id/renewal",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "api",
+                                "v1",
+                                "licenses",
+                                ":license_id",
+                                "renewal"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "license_id",
+                                  "value": "{{license_id}}"
+                                }
+                              ]
+                            },
+                            "description": "Ручка продления лицензии"
+                          },
+                          "response": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "resume",
+                      "item": [
+                        {
+                          "name": "Resume License",
+                          "request": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              }
+                            ],
+                            "url": {
+                              "raw": "{{baseUrl}}/api/v1/licenses/:license_id/resume",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "api",
+                                "v1",
+                                "licenses",
+                                ":license_id",
+                                "resume"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "license_id",
+                                  "value": "{{license_id}}"
+                                }
+                              ]
+                            },
+                            "description": "Ручка восстановления лицензии"
+                          },
+                          "response": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "revoke",
+                      "item": [
+                        {
+                          "name": "Revoke License",
+                          "request": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                              },
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"reason\": \"Нарушение правил полётов\"\n}",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "{{baseUrl}}/api/v1/licenses/:license_id/revoke",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "api",
+                                "v1",
+                                "licenses",
+                                ":license_id",
+                                "revoke"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "license_id",
+                                  "value": "{{license_id}}"
+                                }
+                              ]
+                            },
+                            "description": "Ручка отзыва лицензии"
+                          },
+                          "response": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Get License",
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/licenses/:license_id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "licenses",
+                            ":license_id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "license_id",
+                              "value": "{{license_id}}"
+                            }
+                          ]
+                        },
+                        "description": "Ручка получения лицензии по id"
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Add License",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"customer_id\": \"{{customer_id}}\",\n  \"rank\": \"PRO\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/licenses",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "licenses"
+                      ]
+                    },
+                    "description": "Ручка создания лицензии"
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get Licenses",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/licenses?limit=20&offset=0",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "licenses"
+                      ],
+                      "query": [
+                        {
+                          "key": "limit",
+                          "value": "20"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0"
+                        },
+                        {
+                          "key": "status",
+                          "value": "active",
+                          "disabled": true
+                        },
+                        {
+                          "key": "key",
+                          "value": "drl_",
+                          "disabled": true
+                        },
+                        {
+                          "key": "customer_id",
+                          "value": "{{customer_id}}",
+                          "disabled": true
+                        }
+                      ]
+                    },
+                    "description": "Ручка получения списка всех лицензий в формате пагинации с фильтрами"
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "drones",
+              "item": [
+                {
+                  "name": "{drone_id}",
+                  "item": [
+                    {
+                      "name": "purchase",
+                      "item": [
+                        {
+                          "name": "Purchase Drone",
+                          "request": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                              },
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"customer_id\": \"{{customer_id}}\"\n}",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "{{baseUrl}}/api/v1/drones/:drone_id/purchase",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "api",
+                                "v1",
+                                "drones",
+                                ":drone_id",
+                                "purchase"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "drone_id",
+                                  "value": "{{drone_id}}"
+                                }
+                              ]
+                            },
+                            "description": "Ручка покупки дрона"
+                          },
+                          "response": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "parts",
+                      "item": [
+                        {
+                          "name": "Get Parts Drone",
+                          "request": {
+                            "method": "GET",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              }
+                            ],
+                            "url": {
+                              "raw": "{{baseUrl}}/api/v1/drones/:drone_id/parts?limit=20&offset=0",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "api",
+                                "v1",
+                                "drones",
+                                ":drone_id",
+                                "parts"
+                              ],
+                              "query": [
+                                {
+                                  "key": "limit",
+                                  "value": "20"
+                                },
+                                {
+                                  "key": "offset",
+                                  "value": "0"
+                                }
+                              ],
+                              "variable": [
+                                {
+                                  "key": "drone_id",
+                                  "value": "{{drone_id}}"
+                                }
+                              ]
+                            },
+                            "description": "Ручка получения всех запчастей дрона в формате пагинации"
+                          },
+                          "response": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Get Drone",
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/drones/:drone_id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "drones",
+                            ":drone_id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "drone_id",
+                              "value": "{{drone_id}}"
+                            }
+                          ]
+                        },
+                        "description": "Ручка получения дрона по id"
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Patch Drone",
+                      "request": {
+                        "method": "PATCH",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"price\": 89900\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/drones/:drone_id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "drones",
+                            ":drone_id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "drone_id",
+                              "value": "{{drone_id}}"
+                            }
+                          ]
+                        },
+                        "description": "Ручка изменения дрона"
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Add Drone",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"sku\": \"DJI-MINI4-0001\",\n  \"name\": \"DJI Mini 4 Pro\",\n  \"manufacturer\": \"DJI\",\n  \"purpose\": \"camera\",\n  \"rank\": \"PILOT\",\n  \"weight_g\": 249,\n  \"max_flight_time_min\": 34,\n  \"max_range_m\": 10000,\n  \"price\": 95000,\n  \"has_camera\": true\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/drones",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "drones"
+                      ]
+                    },
+                    "description": "Ручка создания дрона"
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get Drones",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/drones?limit=20&offset=0",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "drones"
+                      ],
+                      "query": [
+                        {
+                          "key": "limit",
+                          "value": "20"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0"
+                        },
+                        {
+                          "key": "purpose",
+                          "value": "camera",
+                          "disabled": true
+                        },
+                        {
+                          "key": "rank",
+                          "value": "PILOT",
+                          "disabled": true
+                        },
+                        {
+                          "key": "max_rank",
+                          "value": "PRO",
+                          "disabled": true
+                        },
+                        {
+                          "key": "status",
+                          "value": "in_stock",
+                          "disabled": true
+                        },
+                        {
+                          "key": "manufacturer",
+                          "value": "DJI",
+                          "disabled": true
+                        },
+                        {
+                          "key": "has_camera",
+                          "value": "true",
+                          "disabled": true
+                        },
+                        {
+                          "key": "min_price",
+                          "value": "10000",
+                          "disabled": true
+                        },
+                        {
+                          "key": "max_price",
+                          "value": "150000",
+                          "disabled": true
+                        },
+                        {
+                          "key": "customer_id",
+                          "value": "{{customer_id}}",
+                          "disabled": true
+                        }
+                      ]
+                    },
+                    "description": "Ручка получения списка дронов в формате пагинации с фильтрами"
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "parts",
+              "item": [
+                {
+                  "name": "{part_id}",
+                  "item": [
+                    {
+                      "name": "Get Part",
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/parts/:part_id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "parts",
+                            ":part_id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "part_id",
+                              "value": "{{part_id}}"
+                            }
+                          ]
+                        },
+                        "description": "Ручка получения запчасти по id"
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Patch Part",
+                      "request": {
+                        "method": "PATCH",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"name\": \"Пропеллер Carbon 5 Pro\",\n  \"price\": 1800\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/parts/:part_id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "parts",
+                            ":part_id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "part_id",
+                              "value": "{{part_id}}"
+                            }
+                          ]
+                        },
+                        "description": "Ручка изменения запчасти"
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Delete Part",
+                      "request": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/parts/:part_id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "parts",
+                            ":part_id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "part_id",
+                              "value": "{{part_id}}"
+                            }
+                          ]
+                        },
+                        "description": "Ручка удаления запчасти"
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Add Part",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"Пропеллер Carbon 5\",\n  \"purpose\": \"fpv\",\n  \"price\": 1500,\n  \"drone_id\": null\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/parts",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "parts"
+                      ]
+                    },
+                    "description": "Ручка создания запчасти"
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get Parts",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/parts?limit=20&offset=0",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "parts"
+                      ],
+                      "query": [
+                        {
+                          "key": "limit",
+                          "value": "20"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0"
+                        },
+                        {
+                          "key": "purpose",
+                          "value": "fpv",
+                          "disabled": true
+                        },
+                        {
+                          "key": "attached",
+                          "value": "false",
+                          "disabled": true
+                        }
+                      ]
+                    },
+                    "description": "Ручка получения списка запчастей в формате пагинации с фильтрами"
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "customer_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "license_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "drone_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "part_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
