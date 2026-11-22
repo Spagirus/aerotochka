@@ -59,7 +59,7 @@ class ServiceLicense:
             if active.rank.rank >= data.rank.rank:
                 raise Conflict409Error(
                     code="ACTIVE_LICENSE_EXISTS",
-                    message="уже есть действующая лицензия того же или более высокого ранга",
+                 message="уже есть действующая лицензия того же или более высокого ранга",
                 )
 
             active.status = LicenseStatus.REVOKED
