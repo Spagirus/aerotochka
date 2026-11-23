@@ -7,8 +7,8 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.domain.enums import FlightRank, LicenseStatus
-from src.infra.models.customer import Customer
-from src.infra.models.license import License
+from src.infrastructure.models.customer import Customer
+from src.infrastructure.models.license import License
 
 
 class CustomerRepo:

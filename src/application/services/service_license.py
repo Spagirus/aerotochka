@@ -6,10 +6,10 @@ from dateutil.relativedelta import relativedelta
 from src.application.schemas.license import CreateLicense, RevokeBody
 from src.domain.enums import LicenseStatus
 from src.domain.exceptions import Conflict409Error, NotFound404Error
-from src.infra.models import Customer, License
-from src.infra.models.utils import get_msk_time
-from src.infra.repositories.customer import CustomerRepo
-from src.infra.repositories.license import LicenseRepo
+from src.infrastructure.models import Customer, License
+from src.infrastructure.models.utils import get_msk_time
+from src.infrastructure.repositories.customer import CustomerRepo
+from src.infrastructure.repositories.license import LicenseRepo
 
 
 class ServiceLicense:

@@ -7,7 +7,7 @@ from sqlalchemy import func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.domain.enums import LicenseStatus
-from src.infra.models.license import License
+from src.infrastructure.models.license import License
 
 
 class LicenseRepo:

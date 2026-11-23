@@ -6,8 +6,8 @@ from datetime import date, datetime
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from src.infra.db import Base
-from src.infra.models.utils import get_msk_time
+from src.infrastructure.db import Base
+from src.infrastructure.models.utils import get_msk_time
 
 
 class Customer(Base):

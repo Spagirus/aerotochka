@@ -6,7 +6,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.domain.enums import DronePurpose
-from src.infra.models.part import Part
+from src.infrastructure.models.part import Part
 
 
 class PartRepo:

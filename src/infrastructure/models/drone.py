@@ -7,8 +7,8 @@ from sqlalchemy import CheckConstraint, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.domain.enums import DronePurpose, DroneStatus, FlightRank
-from src.infra.db import Base
-from src.infra.models.utils import get_msk_time
+from src.infrastructure.db import Base
+from src.infrastructure.models.utils import get_msk_time
 
 
 class Drone(Base):

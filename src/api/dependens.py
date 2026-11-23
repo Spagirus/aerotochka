@@ -8,11 +8,11 @@ from src.application.services.service_customer import ServiceCustomer
 from src.application.services.service_drone import ServiceDrone
 from src.application.services.service_license import ServiceLicense
 from src.application.services.service_part import ServicePart
-from src.infra.db import get_session
-from src.infra.repositories.customer import CustomerRepo
-from src.infra.repositories.drone import DroneRepo
-from src.infra.repositories.license import LicenseRepo
-from src.infra.repositories.part import PartRepo
+from src.infrastructure.db import get_session
+from src.infrastructure.repositories.customer import CustomerRepo
+from src.infrastructure.repositories.drone import DroneRepo
+from src.infrastructure.repositories.license import LicenseRepo
+from src.infrastructure.repositories.part import PartRepo
 
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
 

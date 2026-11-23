@@ -6,12 +6,12 @@ from sqlalchemy.exc import IntegrityError
 from src.application.schemas.drone import CreateDrone, FlightRank, PurchaseDrone, UpdateDrone
 from src.domain.enums import DronePurpose, DroneStatus, LicenseStatus
 from src.domain.exceptions import Conflict409Error, NotFound404Error
-from src.infra.models import Drone
-from src.infra.models.customer import Customer
-from src.infra.models.drone import get_msk_time
-from src.infra.repositories.customer import CustomerRepo
-from src.infra.repositories.drone import DroneRepo
-from src.infra.repositories.license import LicenseRepo
+from src.infrastructure.models import Drone
+from src.infrastructure.models.customer import Customer
+from src.infrastructure.models.drone import get_msk_time
+from src.infrastructure.repositories.customer import CustomerRepo
+from src.infrastructure.repositories.drone import DroneRepo
+from src.infrastructure.repositories.license import LicenseRepo
 
 
 class ServiceDrone:

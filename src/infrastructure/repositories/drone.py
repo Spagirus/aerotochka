@@ -4,8 +4,8 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.domain.enums import DronePurpose, DroneStatus, FlightRank
-from src.infra.models.drone import Drone
-from src.infra.models.part import Part
+from src.infrastructure.models.drone import Drone
+from src.infrastructure.models.part import Part
 
 
 class DroneRepo:

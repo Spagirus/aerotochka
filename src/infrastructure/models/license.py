@@ -7,8 +7,8 @@ from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.domain.enums import FlightRank, LicenseStatus
-from src.infra.db import Base
-from src.infra.models.utils import get_key, get_msk_time, get_valid_until
+from src.infrastructure.db import Base
+from src.infrastructure.models.utils import get_key, get_msk_time, get_valid_until
 
 
 class License(Base):

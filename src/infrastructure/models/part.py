@@ -6,7 +6,7 @@ from sqlalchemy import CheckConstraint, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.domain.enums import DronePurpose
-from src.infra.db import Base
+from src.infrastructure.db import Base
 
 
 class Part(Base):

@@ -5,10 +5,10 @@ from uuid import UUID
 from src.application.schemas.part import CreatePart, UpdatePart
 from src.domain.enums import DronePurpose
 from src.domain.exceptions import Conflict409Error, NotFound404Error
-from src.infra.models import Part
-from src.infra.models.drone import Drone
-from src.infra.repositories.drone import DroneRepo
-from src.infra.repositories.part import PartRepo
+from src.infrastructure.models import Part
+from src.infrastructure.models.drone import Drone
+from src.infrastructure.repositories.drone import DroneRepo
+from src.infrastructure.repositories.part import PartRepo
 
 
 class ServicePart:
